@@ -1,0 +1,42 @@
+<doctype html />
+<html>
+<head>
+<script type="text/javascript">
+<!--
+function showTutorial(name){
+  document.myform.stage.value = name
+}
+//-->
+</script>
+
+</head>
+<body>
+<!--http://www.tutorialspoint.com/javascript/javascript_image_map.htm-->
+
+<img src="img/weather.jpg" usemap="#playregions"/>
+
+<map name="playregions">
+   <area shape="poly" 
+            coords="74,0,113,29,98,72,52,72,38,27"
+            href="/perl/index.htm" alt="Perl Tutorial"
+            target="_self" 
+            onMouseOver="showTutorial('perl')" 
+            onMouseOut="showTutorial('')"/>
+
+   <area shape="rect" 
+            coords="22,83,126,125"
+            href="/html/index.htm" alt="HTML Tutorial" 
+            target="_self" 
+            onMouseOver="showTutorial('html')" 
+            onMouseOut="showTutorial('')"/>
+
+   <area shape="circle" 
+            coords="73,168,32"
+            href="/php/index.htm" alt="PHP Tutorial"
+            target="_self" 
+            onMouseOver="showTutorial('php')" 
+            onMouseOut="showTutorial('')"/>
+</map>
+
+</body>
+</html>
