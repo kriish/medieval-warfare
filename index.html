@@ -3,40 +3,76 @@
 <head>
 <script type="text/javascript">
 <!--
+
+function drawArrow(context) {
+context.beginPath();
+context.moveTo(0, 40);
+context.lineTo(240, 40);
+context.moveTo(260, 40);
+context.lineTo(500, 40);
+context.moveTo(495, 35);
+context.lineTo(500, 40);
+context.lineTo(495, 45);   
+context.strokeStyle = "#000";
+context.stroke();
+}
+
+function drawGrid(context) {
+  for (var x = 0.5; x < 500; x += 10) {
+    context.moveTo(x, 0);
+    context.lineTo(x, 375);
+  }
+ 
+  for (var y = 0.5; y < 375; y += 10) {
+    context.moveTo(0, y);
+    context.lineTo(500, y);
+  }    
+  
+  context.strokeStyle = "#eee";
+  context.stroke();
+}
+ 
+function draw() {
+  var map_canvas = document.getElementById("map");
+  var b_context = map.getContext("2d");
+  b_context.fillRect(50, 25, 150, 100);
+  drawGrid(b_context);
+  drawArrow(b_context);
+}
+
+function showPopup(name){
+  document.myform.stage.value = name
+}
 function showTutorial(name){
   document.myform.stage.value = name
+}
+
+function setBackgroundImage(context) {
+//    var sun = document.getElementById("sun");
+    // or
+    var sun = new Image();
+   sun.src = "img/weather.jpg";
+
+  context.drawImage(sun, 0, 0);
+}
+
+window.onload = function() {
+  var canvas = document.getElementById("map");
+  var context = canvas.getContext("2d");
+  setBackgroundImage(context);
 }
 //-->
 </script>
 
 </head>
 <body>
+<!-- change to canvas -->
+<canvas id="map" width="500" height="500" style="border:1px dotted;float:left"  onclick="draw();return false"></canvas>
+
 <!--http://www.tutorialspoint.com/javascript/javascript_image_map.htm-->
-
-<img src="img/weather.jpg" usemap="#playregions"/>
-
-<map name="playregions">
-   <area shape="poly" 
-            coords="74,0,113,29,98,72,52,72,38,27"
-            href="/perl/index.htm" alt="Perl Tutorial"
-            target="_self" 
-            onMouseOver="showTutorial('perl')" 
-            onMouseOut="showTutorial('')"/>
-
-   <area shape="rect" 
-            coords="22,83,126,125"
-            href="/html/index.htm" alt="HTML Tutorial" 
-            target="_self" 
-            onMouseOver="showTutorial('html')" 
-            onMouseOut="showTutorial('')"/>
-
-   <area shape="circle" 
-            coords="73,168,32"
-            href="/php/index.htm" alt="PHP Tutorial"
-            target="_self" 
-            onMouseOver="showTutorial('php')" 
-            onMouseOut="showTutorial('')"/>
-</map>
+<form name="myform">
+   <input type="text" name="stage" size="20" />
+</form>
 
 </body>
 </html>
