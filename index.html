@@ -18,12 +18,13 @@ context.stroke();
 }
 
 function drawGrid(context) {
-  for (var x = 0.5; x < 500; x += 10) {
+    var cellSize = 50;
+  for (var x = 0.5; x < 500; x += cellSize) {
     context.moveTo(x, 0);
     context.lineTo(x, 375);
   }
  
-  for (var y = 0.5; y < 375; y += 10) {
+  for (var y = 0.5; y < 375; y += cellSize) {
     context.moveTo(0, y);
     context.lineTo(500, y);
   }    
@@ -51,15 +52,49 @@ function setBackgroundImage(context) {
 //    var sun = document.getElementById("sun");
     // or
     var sun = new Image();
-   sun.src = "img/weather.jpg";
+   sun.src = "img/map1.jpg";
 
   context.drawImage(sun, 0, 0);
+}
+
+function writeText(context) {
+    context.font = "bold 16px sans-serif";
+    context.fillText("Mamadou", 248, 43);
+//    context.fillText("y", 58, 165);
+}
+
+function getCursorPosition(e) {
+    var x;
+    var y;
+    if (e.pageX != undefined && e.pageY != undefined) {
+    x = e.pageX;
+	y = e.pageY;
+    }
+    else {
+	x = e.clientX + document.body.scrollLeft +
+            document.documentElement.scrollLeft;
+	y = e.clientY + document.body.scrollTop +
+            document.documentElement.scrollTop;
+    }
+     x -= gCanvasElement.offsetLeft;
+    y -= gCanvasElement.offsetTop;
+     var cell = new Cell(Math.floor(y/kPieceHeight),
+                        Math.floor(x/kPieceWidth));
+    return cell;
+
+}
+//Highlight a game square on click
+function selectSquare(event) {
+    var cell = getCursorPosition(event);
+
 }
 
 window.onload = function() {
   var canvas = document.getElementById("map");
   var context = canvas.getContext("2d");
   setBackgroundImage(context);
+  writeText(context);
+  canvas.addEventListener("click", selectSquare, false);
 }
 //-->
 </script>
@@ -67,7 +102,7 @@ window.onload = function() {
 </head>
 <body>
 <!-- change to canvas -->
-<canvas id="map" width="500" height="500" style="border:1px dotted;float:left"  onclick="draw();return false"></canvas>
+<canvas id="map" width="600" height="600" style="border:1px dotted;float:left"  onclick="draw();return false"></canvas>
 
 <!--http://www.tutorialspoint.com/javascript/javascript_image_map.htm-->
 <form name="myform">
