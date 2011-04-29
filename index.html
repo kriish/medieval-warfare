@@ -4,6 +4,14 @@
 <script type="text/javascript">
 <!--
 
+function canvasWidth() {
+  return 600;
+  }
+    
+function canvasHeight() {
+    return 600;
+}
+    
 function drawArrow(context) {
 context.beginPath();
 context.moveTo(0, 40);
@@ -19,18 +27,28 @@ context.stroke();
 
 function drawGrid(context) {
     var cellSize = 50;
-  for (var x = 0.5; x < 500; x += cellSize) {
+  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
     context.moveTo(x, 0);
-    context.lineTo(x, 375);
+    context.lineTo(x, canvasHeight());
   }
  
-  for (var y = 0.5; y < 375; y += cellSize) {
+  for (var y = 0.5; y < canvasHeight(); y += cellSize) {
     context.moveTo(0, y);
-    context.lineTo(500, y);
+    context.lineTo(canvasWidth(), y);
   }    
   
   context.strokeStyle = "#eee";
   context.stroke();
+  
+  chooseTile(context);
+}
+// x and y are the coordinates clicked based on which we choose the tile
+function chooseTile(context, x,y) {
+    x % 50
+    context.fillStyle = "rgba(0, 0, 200, 0.5)";
+   context.fillRect(0.5,0.5,50.5,50.5);
+//   context.strokeStyle = "#ff0";
+//   context.stroke();
 }
  
 function draw() {
@@ -95,6 +113,7 @@ window.onload = function() {
   setBackgroundImage(context);
   writeText(context);
   canvas.addEventListener("click", selectSquare, false);
+  drawGrid(context);
 }
 //-->
 </script>
@@ -102,7 +121,7 @@ window.onload = function() {
 </head>
 <body>
 <!-- change to canvas -->
-<canvas id="map" width="600" height="600" style="border:1px dotted;float:left"  onclick="draw();return false"></canvas>
+<canvas id="map" width="600" height="600" style="border:1px dotted;float:left"  ></canvas><!--onclick="draw();return false"-->
 
 <!--http://www.tutorialspoint.com/javascript/javascript_image_map.htm-->
 <form name="myform">
