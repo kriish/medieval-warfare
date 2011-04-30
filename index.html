@@ -44,9 +44,10 @@ function drawGrid(context) {
 }
 // x and y are the coordinates clicked based on which we choose the tile
 function chooseTile(context, x,y) {
-    x % 50
+    x = x - (x % 50);
+    y = y - (y % 50);
     context.fillStyle = "rgba(0, 0, 200, 0.5)";
-   context.fillRect(0.5,0.5,50.5,50.5);
+   context.fillRect(0.5 + x, 0.5 + y,50.5,50.5);
 //   context.strokeStyle = "#ff0";
 //   context.stroke();
 }
@@ -73,6 +74,7 @@ function setBackgroundImage(context) {
    sun.src = "img/map1.jpg";
 
   context.drawImage(sun, 0, 0);
+  //alert("test");
 }
 
 function writeText(context) {
@@ -104,7 +106,9 @@ function getCursorPosition(e) {
 //Highlight a game square on click
 function selectSquare(event) {
     var cell = getCursorPosition(event);
-
+      var canvas = document.getElementById("map");
+  var context = canvas.getContext("2d");
+    chooseTile(context, 134, 167);
 }
 
 window.onload = function() {
