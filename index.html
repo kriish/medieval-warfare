@@ -12,8 +12,45 @@
         <script src="js/jquery.rightClick.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
+
+// city name
+function hideCityName() {
+    $('#new-city-name').hide(); // city-name
+}
+function showCityName() {
+    $('#new-city-name').show(); // city-name
+    $('#new-city-name').offset({ top: mouseY, left: mouseX });
+//	$('#new-city-name').width($(contextName).width());
+//	$('#new-city-name').height($(contextName).height());
+
+}
+function initCityName() {}
+function keyPressedCallback(event) {
+           event = event || window.event;
+
+           if (event.metaKey)
+             return;
+
+           var keyChar =String.fromCharCode(o3djs.event.getEventKeyChar(event));
+           keyChar = keyChar.toLowerCase();
+    $('#city-name').append(keyChar);
+    
+         }
+function getCityName(nameFinished) {
+  var name = false;
+  window.document.onkeypress = keyPressedCallback;
+  showCityName();
+  
+  return name;
+}
+function cityNameFinished() {
+
+}
+// eof city name
+
 // start of context menu
 
+                var contextName = '#context'; // basic context, nothing on selected area
     		function Init()
 			{
 				$("#right-click-controller").rightClick(function(e) {
@@ -27,18 +64,25 @@
 			
 			function ShowContextMenu(mouseX, mouseY)
 			{
-				$('#context').css({zIndex: '102'}).show();
-				$('#context').offset({ top: mouseY, left: mouseX });
+                if (currentlySelectedCell && currentlySelectedCell.city) {
+                        alert('we have city in the cell');
+                        contextName = '#context-city';
+                    
+                } else {
+                   contextName = '#context';
+                     }
+				$(contextName).css({zIndex: '102'}).show();
+				$(contextName).offset({ top: mouseY, left: mouseX });
 				$('#context-menu-bkg').show();
 				$('#context-menu-bkg').offset({ top: mouseY, left: mouseX });
-				$('#context-menu-bkg').width($('#context').width());
-				$('#context-menu-bkg').height($('#context').height());
+				$('#context-menu-bkg').width($(contextName).width());
+				$('#context-menu-bkg').height($(contextName).height());
 			}
 			
 			function HideContextMenu()
 			{
 				$('#context-menu-bkg').hide();
-				$('#context').hide();
+				$(contextName).hide();
 				$('#overlay').remove();
 			}
             // end of context menu
@@ -149,34 +193,39 @@ var mouseX = e.clientX - canvas.offsetLeft;
     
 }
 
-
+function getActionContext() {
+      var topCanvas = document.getElementById("action");
+  var topContext = topCanvas.getContext("2d");
+  return topContext
+    }
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
-      var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
     var newCity = new City(currentlySelectedCell);
-    newCity.draw(topContext);
+    newCity.draw(getActionContext());
 }
 function createMonument() {
-    alert("creating");
-      var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
     var newCity = new City(currentlySelectedCell);
-    newCity.draw(topContext);
+    newCity.draw(getActionContext());
 }
 function createTroop() {
-    alert("creating");
-      var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
     var newCity = new City(currentlySelectedCell);
-    newCity.draw(topContext);
+    newCity.draw(getActionContext());
 }
 function createMine() {
-    alert("creating");
-      var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
     var newCity = new City(currentlySelectedCell);
-    newCity.draw(topContext);
+    newCity.draw(getActionContext());
+}
+function cityInfo() {
+  var info = document.getElementById("info");
+  info.innerHTML = "TODO";
+}
+function troopInfo() {
+  var info = document.getElementById("info");
+  info.innerHTML = "TODO troop info";
+}
+
+function submitRound() {
+    alert('TODO');
 }
 
 window.onload = function() {
@@ -187,8 +236,8 @@ window.onload = function() {
   var topCanvas = document.getElementById("top");
   var topContext = topCanvas.getContext("2d");
   writeText(topContext);
-//  topCanvas.addEventListener("click", selectSquare, false);
-  topCanvas.addEventListener("mouseup", selectSquare, false);
+  topCanvas.addEventListener("click", selectSquare, false);
+//  topCanvas.addEventListener("mouseup", selectSquare, false);
 //  drawGrid(context);
 //  honeycomb(topContext);
 //  selectHoneycomb(topContext);
@@ -215,14 +264,47 @@ window.onload = function() {
     		<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">Create mine</div>
 			<div class="menu-item disabled">Mark as Completed</div>
 			<div class="separator-line"></div>
-			<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">City info</div>
+			<div class="menu-item allow-hover" onclick="cityInfo(); HideContextMenu();">City info</div>
 			<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">Troop info</div>
+		</div>
+        <div id="context-city" class="context-menu">
+    		<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">Build church</div>
+			<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">Build granary</div>
+    		<div class="menu-item allow-hover" onclick="alert('TODO'); HideContextMenu();">Build X</div>
+			<div class="separator-line"></div>
+			<div class="menu-item allow-hover" onclick="cityInfo(); HideContextMenu();">Create troops</div>
+			<div class="menu-item allow-hover" onclick="cityInfo(); HideContextMenu();">Troop info</div>
+    		<div class="menu-item allow-hover" onclick="troopInfo(); HideContextMenu();">City info</div>
 		</div>
 		<!--div id="right-click-controller" style="height: 100px; width: 300px; border: 1px solid #999; padding: 10px">right click here</div-->
 
+<div id="new-city-name" style="display: none;">
+  <input type="text" name="city-name"/>
+</div>
+
+<!-- map is the background map, action holds cities and troops, top holds selections -->
 <div id="right-click-controller" style="position: relative;">
  <canvas id="map" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <canvas id="action" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
+</div>
+<div id="info" style="position: relative;left:600px;">
+This is the info chart<br>
+<p>
+<h2>Create city</h2>
+City name <input id="cityName" type="text"/>
+<button>Create</button><button>Cancel</button>
+</p>
+<p>
+<h2>Create troops</h2>
+Troop name <input name="troopName" type="text"/>
+Troop type <select><option>Infantry</option><option>Horsemen</option></select>
+Troop size <input name="troopSize" type="text"/>
+<button>Create</button><button>Cancel</button>
+</p>
+<p>
+<button onclick="submitRound();return false;">Submit round</button>
+</p>
 </div>
 <!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 

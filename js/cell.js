@@ -29,7 +29,7 @@ function City(cell) {
     
     function draw_city(context) {
       var icon = new Image();
-      icon.src = "img/monument.jpg";
+      icon.src = "img/weather.jpg";
       context.drawImage(icon, cell.x, cell.y);
     }
     this.draw = draw_city;
