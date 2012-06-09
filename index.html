@@ -1,4 +1,3 @@
-<doctype html />
 <html>
 <!--hellox-->
 <head>
@@ -129,9 +128,9 @@ function createCity() {
 function createTroop() {
     var name = document.getElementById("troopName").value;
     alert("Creating new troop called " + name);
-    var troop = new City(currentlySelectedCell, name);
+    var troop = new Troop(currentlySelectedCell, name);
     troop.draw(getActionContext());
-    pendingTroops[cityName] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
+    pendingTroops[name] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 
@@ -139,6 +138,7 @@ function cityInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO";
 }
+
 function troopInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO troop info";
@@ -178,7 +178,7 @@ alert(JSON.stringify(submitJson));
 <button onclick="createMonument();return false;">Create monument</button>
 <button onclick="createMine();return false;">Create mine</button>
 <button onclick="createTroop();return false;">New troop</button-->
-
+<img style="display: none" src="img/map1.jpg"/>
 <div id="context-menu-bkg" style="display: none;"></div>
 		<div id="context" class="context-menu">
 			<div class="menu-item allow-hover" onclick="createCity(); HideContextMenu();">Create city</div>
@@ -208,8 +208,9 @@ alert(JSON.stringify(submitJson));
 <div id="right-click-controller" style="position: relative;">
  <canvas id="map" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
  <canvas id="action" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <!--canvas id="city" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas-->
  <canvas id="top" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
-</div>
+ </div>
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3>Cities</h3>
@@ -241,25 +242,39 @@ Troop size <input id="troopSize" type="text" value="100"/><br>
 
 <script>
 //<!--
+function setBackgroundImage2(mapCanvas, mapContext) {
+    var canvasExists = !!(mapCanvas.getContext && mapCanvas.getContext('2d')),
+    oImage = $('img')[0];
+    if (canvasExists) {
+        mapCanvas.height = oImage.height;
+        mapCanvas.width = oImage.width;
+        mapContext.drawImage(oImage, 0, 0);
+      }
+    
+}
 window.onload = function() {
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
   
   // login popup + button start game
   
-  setBackgroundImage(mapContext);
 
   var topCanvas = document.getElementById("top");
   var topContext = topCanvas.getContext("2d");
   writeText(topContext, "Mamadou", 248, 43);
   topCanvas.addEventListener("click", selectSquare, false);
 //  topCanvas.addEventListener("mouseup", selectSquare, false);
+    setBackgroundImage2(mapCanvas, mapContext);
   drawGrid(mapContext);
 //  honeycomb(topContext);
 //  selectHoneycomb(topContext);
 //regionListeners(topCanvas, topContext);
   topCanvas.addEventListener("mousemove", handleMouseover, false);
   Init();
+  
+//    setBackgroundImage(mapContext);
+
+    
 }
 //-->
 </script>

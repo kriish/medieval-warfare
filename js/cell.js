@@ -44,3 +44,25 @@ function City(cell, name) {
     }
     this.draw = draw_city;
 }
+
+function Troop(cell, name) {
+    this.location = cell;
+    cell.troop = this;
+    this.name = "new troop";
+    if (name) {
+        this.name = name;
+    }
+    
+    this.size = TOWN;
+    
+    function draw_troop(context) {
+      var icon = new Image();
+      icon.src = "img/troop.png";
+      context.drawImage(icon, cell.x, cell.y);
+
+        context.font = "bold 16px sans-serif";
+        context.fillText(name, cell.x, cell.y);
+
+    }
+    this.draw = draw_troop;
+}
