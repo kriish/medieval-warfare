@@ -1,5 +1,4 @@
 
-
 //player_id
 //cities 
 //	city.name
@@ -52,3 +51,5 @@ function player( player_id, initialMoney ) {
 		delete this.cities[theCity.name];
 	};
 }
+
+exports.player = player;
