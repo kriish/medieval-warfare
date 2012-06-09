@@ -36,3 +36,12 @@ function submitRound(roundInfo, callback) {
 	sendToServer('submitRound', submitJson, callback);	
 	
 }
+
+function subscribeToServer(playerName, callback) {
+	var submitJson = new Object();
+
+	submitJson.playerName = playerName;
+
+	sendToServer('subscribeToServer', submitJson, callback);
+	
+};

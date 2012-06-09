@@ -287,8 +287,16 @@ window.onload = function() {
 		  
 //		    setBackgroundImage(mapContext);
 
-	  }
-  })
+		  setInterval(
+				  subscribeToServer(frontEndPlayer.id, 
+						  function(notification) {
+					  			alert("received notification from server " + notification);
+				  			}),
+				  30000);
+	  } // end of successful
+
+  }); // end of joinTheGame
+  
 }
 //-->
 </script>

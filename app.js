@@ -83,7 +83,24 @@ app.post('/submitRound/', function(request, response) {
 });
 
 
-app.post('/endGame',  function(request, response){
+
+app.post('/subscribeToServer/', function(request, response) {
+	var data = '';
+
+	request.addListener('data', function(chunk) { data += chunk; });
+	
+	request.addListener('end', function() {
+		console.log("=== subscribeToServer == : received data is :" + data);
+
+		var playerInfo = JSON.parse(data);
+
+		gameMaster.handleClientSubscription(playerInfo, response);
+
+	});
+
+});
+
+app.post('/endGame/',  function(request, response){
 
 
 	// the body of the POST is JSON payload. It is raw, not
