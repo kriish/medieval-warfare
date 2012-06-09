@@ -196,12 +196,18 @@ var mouseX = e.clientX - canvas.offsetLeft;
 function getActionContext() {
       var topCanvas = document.getElementById("action");
   var topContext = topCanvas.getContext("2d");
-  return topContext
+  return topContext;
     }
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
     var newCity = new City(currentlySelectedCell);
     newCity.draw(getActionContext());
+}
+function createCityBackend() {
+    //call backend
+    /*
+    { }
+    */
 }
 function createMonument() {
     var newCity = new City(currentlySelectedCell);
@@ -228,11 +234,12 @@ function submitRound() {
     alert('TODO');
 }
 
-window.onload = function() {
+//window.onload = function() {
+function onloadsave() {
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
   setBackgroundImage(mapContext);
-  
+ 
   var topCanvas = document.getElementById("top");
   var topContext = topCanvas.getContext("2d");
   writeText(topContext);
@@ -293,7 +300,7 @@ This is the info chart<br>
 <p>
 <h2>Create city</h2>
 City name <input id="cityName" type="text"/>
-<button>Create</button><button>Cancel</button>
+<button onsubmit="callCreate">Create</button><button>Cancel</button>
 </p>
 <p>
 <h2>Create troops</h2>
@@ -308,6 +315,28 @@ Troop size <input name="troopSize" type="text"/>
 </div>
 <!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 
+<script>
+//<!--
+window.onload = function() {
+  var mapCanvas = document.getElementById("map");
+  var mapContext = mapCanvas.getContext("2d");
+  setBackgroundImage(mapContext);
 
+  var topCanvas = document.getElementById("top");
+  var topContext = topCanvas.getContext("2d");
+  writeText(topContext);
+  topCanvas.addEventListener("click", selectSquare, false);
+//  topCanvas.addEventListener("mouseup", selectSquare, false);
+//  drawGrid(context);
+//  honeycomb(topContext);
+//  selectHoneycomb(topContext);
+//regionListeners(topCanvas, topContext);
+  topCanvas.addEventListener("mousemove", handleMouseover, false);
+  Init();
+}
+//-->
+</script>
+
+</script>
 </body>
 </html>
