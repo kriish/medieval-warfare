@@ -2,7 +2,7 @@ body, p, td {
 	font-size: 12px;
 	font-family: "Lucida Grande", Arial, Verdana;
 	line-height: 14px;
-    background-color: #FF9933;
+//    background-color: #FF9933;
 }
 
 #context-menu-bkg {
@@ -58,7 +58,7 @@ body, p, td {
 
 #info {
     position: relative;
-    left:610px;
+    left:650px;
     width:200px;
     background-color: #fff;
 	opacity: 0.9;
