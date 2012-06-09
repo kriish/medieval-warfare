@@ -1,23 +1,24 @@
 var currentlySelectedCell;
 var currentlyHighlightedCell;
 var mapCells=new Array();
-
+var cellX = 25; 
+var cellY = 25;
 
 // x and y are the coordinates clicked based on which we choose the tile
 function chooseTile(context, x,y) {
-    x = x - (x % 50);
-    y = y - (y % 50);
+    x = x - (x % cellX);
+    y = y - (y % cellY);
     context.fillStyle = "rgba(0, 0, 200, 0.5)";
-   context.fillRect(0.5 + x, 0.5 + y,50.5,50.5);
+   context.fillRect(0.5 + x, 0.5 + y,cellX + 0.5, cellY + 0.5);
 //   context.strokeStyle = "#ff0";
 //   context.stroke();
 }
  
 // x and y are the coordinates clicked based on which we choose the tile
 function unchooseTile(context, x,y) {
-    x = x - (x % 50);
-    y = y - (y % 50);
-   context.clearRect (0.5 + x, 0.5 + y,50.5,50.5);
+    x = x - (x % cellX);
+    y = y - (y % cellY);
+   context.clearRect (0.5 + x, 0.5 + y, cellX + 0.5, cellY + 0.5);
 }
 
 function findCellFromCache(cell) {
@@ -121,5 +122,23 @@ function highlight(cell) {
 function highlightTile(x,y) {
    var cell = getCellByPosition(x,y);
    highlight(cell);
+}
+
+function drawGrid(context) {
+    var cellSize = cellX;
+  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
+    context.moveTo(x, 0);
+    context.lineTo(x, canvasHeight());
+  }
+ 
+  for (var y = 0.5; y < (canvasHeight()); y += cellSize) {
+    context.moveTo(0, y);
+    context.lineTo(canvasWidth(), y);
+  }    
+  
+  context.strokeStyle = "#FFCC99";
+  context.stroke();
+  
+//  chooseTile(context, 0, 0);
 }
 

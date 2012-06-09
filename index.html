@@ -9,45 +9,11 @@
 <script src="js/cellgrid.js"></script>  
 <script src="js/honeycomb.js"></script>  
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
-        <script src="frontend/jquery.js" type="text/javascript"></script>
+        <!--script src="frontend/jquery.js" type="text/javascript"></script-->
         <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
 
-// city name
-function hideCityName() {
-    $('#new-city-name').hide(); // city-name
-}
-function showCityName() {
-    $('#new-city-name').show(); // city-name
-    $('#new-city-name').offset({ top: mouseY, left: mouseX });
-//	$('#new-city-name').width($(contextName).width());
-//	$('#new-city-name').height($(contextName).height());
-
-}
-function initCityName() {}
-function keyPressedCallback(event) {
-           event = event || window.event;
-
-           if (event.metaKey)
-             return;
-
-           var keyChar =String.fromCharCode(o3djs.event.getEventKeyChar(event));
-           keyChar = keyChar.toLowerCase();
-    $('#city-name').append(keyChar);
-    
-         }
-function getCityName(nameFinished) {
-  var name = false;
-  window.document.onkeypress = keyPressedCallback;
-  showCityName();
-  
-  return name;
-}
-function cityNameFinished() {
-
-}
-// eof city name
 
 // start of context menu
 
@@ -89,11 +55,11 @@ function cityNameFinished() {
             // end of context menu
 
 function canvasWidth() {
-  return 600;
+  return 640;
   }
     
 function canvasHeight() {
-    return 600;
+    return 560;
 }
 var eventDisplay = "test";
     function drawRegionDisplay(context){
@@ -138,25 +104,8 @@ function regionListeners(canvas, context) {
             drawRegionDisplay(context);
 }    
     
-/*
-function drawGrid(context) {
-    var cellSize = 50;
-  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
-    context.moveTo(x, 0);
-    context.lineTo(x, canvasHeight());
-  }
- 
-  for (var y = 0.5; y < canvasHeight(); y += cellSize) {
-    context.moveTo(0, y);
-    context.lineTo(canvasWidth(), y);
-  }    
-  
-  context.strokeStyle = "#ee0";
-  context.stroke();
-  
-//  chooseTile(context, 0, 0);
-}
-*/
+
+
 
 function setBackgroundImage(context) {
     var sun = new Image();
@@ -194,6 +143,14 @@ function getActionContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
+
+function getMapContext() {
+  var topCanvas = document.getElementById("map");
+  var topContext = topCanvas.getContext("2d");
+  return topContext;
+}
+var pendingCities = {};
+var pendingTroops = {};
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
     
@@ -203,6 +160,8 @@ function createCity() {
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
+    pendingCities[cityName] = { name : cityName, cell: currentlySelectedCell };
+    $("#pendingCities").append(cityName + " <button>Delete</button><br>");
 }
 function createCityBackend() {
     //call backend
@@ -216,8 +175,13 @@ function createMonument() {
     newCity.draw(getActionContext());
 }
 function createTroop() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
+    //getCityName
+    var name = document.getElementById("troopName").value;
+    //alert("Creating new troop called " + name);
+    var troop = new City(currentlySelectedCell, name);
+    troop.draw(getActionContext());
+    pendingTroops[cityName] = { 'name' : name, cell: currentlySelectedCell };
+    $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 function createMine() {
     var newCity = new City(currentlySelectedCell);
@@ -282,25 +246,27 @@ function submitRound() {
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3>Cities</h3>
-City 1 (TODO)
-City 2 (TODO)
-
+<div id="cityList">
+No Cities
+</div>
 <h3>Troops</h3>
-Troop 1 (TODO)
+<div id="cityList">
+No Troops
+</div>
 </div>
 <!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="roundName">Round 1</h2>
-<h3>Create city</h3>
-New City 1 <button>Cancel</button><br>
+<h3 id="createCity">Create city</h3>
+<div id="pendingCities"></div>
 City name <input id="cityName" type="text"/> <button onclick="createCity();false;">Create</button>
 
 <h3>Create troops</h3>
-Troop 1 <button>Remove</button><br>
+<div id="pendingTroops"></div>
 Troop name <input name="troopName" type="text"/><br>
-Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>
-Troop size <input name="troopSize" type="text"/><br>
-<button>Create</button><button>Cancel</button>
+<!--Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>-->
+Troop size <input name="troopSize" type="text" value="100"/><br>
+<button onclick="createTroop();">Create</button>
 <p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
@@ -321,7 +287,7 @@ window.onload = function() {
   writeText(topContext, "Mamadou", 248, 43);
   topCanvas.addEventListener("click", selectSquare, false);
 //  topCanvas.addEventListener("mouseup", selectSquare, false);
-//  drawGrid(context);
+  drawGrid(mapContext);
 //  honeycomb(topContext);
 //  selectHoneycomb(topContext);
 //regionListeners(topCanvas, topContext);
