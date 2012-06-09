@@ -10,6 +10,8 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
         <!--script src="frontend/jquery.js" type="text/javascript"></script-->
         <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
+    	<script src="frontend/talkToServer.js">	</script>	
+        
 <script type="text/javascript">
 <!--
 
@@ -148,6 +150,7 @@ function getCreatedCities() {
     json.type = 'city';
     json;
 }
+
 function submitRound() {
     var submitJson = {};
     submitJson['player'] = "Playername";
@@ -163,7 +166,7 @@ function submitRound() {
     }
 
 alert(JSON.stringify(submitJson));
-    //sendToServer();
+	sendToServer(submitJson);
 }
 
 //-->
