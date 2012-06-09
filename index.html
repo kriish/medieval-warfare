@@ -76,38 +76,6 @@ var eventDisplay = "test";
         context.fillText(text, 10, 25);
     }
 
-function regionListeners(canvas, context) {
-    var myStage = new Kinetic.Stage(canvas);
-           // draw darth vader image and attach listeners
-            myStage.beginRegion();
-//            context.drawImage(darthVaderImg, 100, 50, 200, 137);
-            // draw rectangular region for image
-            context.beginPath();
-            context.rect(50, 50, 200, 200);
-            context.closePath();
- 
-            myStage.addRegionEventListener("onmouseover", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseover!";
-            });
-            myStage.addRegionEventListener("onmouseout", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseout!";
-            });
-            myStage.addRegionEventListener("onmousedown", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mousedown!";
-            });
-            myStage.addRegionEventListener("onmouseup", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseup!";
-            });
-            myStage.closeRegion();
-            drawRegionDisplay(context);
-}    
-    
-
-
 
 function setBackgroundImage(context) {
     var sun = new Image();
@@ -128,13 +96,6 @@ function handleMouseover(e) {
 var mouseX = e.clientX - canvas.offsetLeft;
     var mouseY = e.clientY - canvas.offsetTop;
  
-   if(mouseX < 100 && mouseY < 100) {
-       console.log("in region");
-       drawEventDisplay(context,"in corner");
-   } else {
-       console.log("out of region");
-       drawEventDisplay(context,"outta here");
-    }
     
     highlightTile(mouseX, mouseY);
     
@@ -151,44 +112,31 @@ function getMapContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
-var pendingCities = {};
+var pendingCities = new Array();
 var pendingTroops = {};
-// TODO third middle canvas for cities and troops? now top
+
 function createCity() {
-    
-    //getCityName
     var cityName = document.getElementById("cityName").value;
     alert("Creating new city called " + cityName);
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
-    pendingCities[cityName] = { name : cityName, cell: currentlySelectedCell };
+    var cityJson = { 'type': 'city', 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
+    console.log("New city: " + JSON.stringify(cityJson));
+    pendingCities[cityName] = cityJson;
+//    alert("PendingCities: " + JSON.stringify(cityJson));
     $("#pendingCities").append(cityName + " <button>Delete</button><br>");
 }
-function createCityBackend() {
-    //call backend
-    /*
-    { }
-    */
-}
 
-function createMonument() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
-}
 function createTroop() {
-    //getCityName
     var name = document.getElementById("troopName").value;
-    //alert("Creating new troop called " + name);
+    alert("Creating new troop called " + name);
     var troop = new City(currentlySelectedCell, name);
     troop.draw(getActionContext());
-    pendingTroops[cityName] = { 'name' : name, cell: currentlySelectedCell };
+    pendingTroops[cityName] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
-function createMine() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
-}
+
 function cityInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO";
@@ -198,10 +146,28 @@ function troopInfo() {
   info.innerHTML = "TODO troop info";
 }
 
+function getCreatedCities() {
+    var json = {};
+    json.type = 'city';
+    json;
+}
+
 function submitRound() {
-	var testData = {};
-	testData['player'] = "playerName";
-	sendToServer(testData);
+    var submitJson = {};
+    submitJson['player'] = "Playername";
+    submitJson['create'] = [];
+    for (var city in pendingCities) {
+        submitJson['create'].push(pendingCities[city]);
+        
+    }
+    
+    for (var troop in pendingTroops) {
+        submitJson['create'].push(pendingTroops[troop]);
+        
+    }
+
+alert(JSON.stringify(submitJson));
+	sendToServer(submitJson);
 }
 
 //-->
@@ -243,9 +209,9 @@ function submitRound() {
 
 <!-- map is the background map, action holds cities and troops, top holds selections -->
 <div id="right-click-controller" style="position: relative;">
- <canvas id="map" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="action" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
- <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
+ <canvas id="map" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+ <canvas id="action" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <canvas id="top" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
 </div>
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
@@ -267,10 +233,10 @@ City name <input id="cityName" type="text"/> <button onclick="createCity();false
 
 <h3>Create troops</h3>
 <div id="pendingTroops"></div>
-Troop name <input name="troopName" type="text"/><br>
+Troop name <input id="troopName" type="text"/><br>
 <!--Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>-->
-Troop size <input name="troopSize" type="text" value="100"/><br>
-<button onclick="createTroop();">Create</button>
+Troop size <input id="troopSize" type="text" value="100"/><br>
+<button onclick="createTroop();false;">Create</button>
 <p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
