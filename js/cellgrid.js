@@ -10,6 +10,7 @@ function chooseTile(context, x,y) {
     y = y - (y % cellY);
     context.fillStyle = "rgba(0, 0, 200, 0.5)";
    context.fillRect(0.5 + x, 0.5 + y,cellX + 0.5, cellY + 0.5);
+   
 //   context.strokeStyle = "#ff0";
 //   context.stroke();
 }
@@ -90,28 +91,53 @@ function select(cell) {
     unchooseTile(context, cell.row, cell.column);
   } else {
       if (currentlySelectedCell) {
+          
         unchooseTile(context, currentlySelectedCell.row, currentlySelectedCell.column);
+        currentlySelectedCell.selected = false;
         currentlySelectedCell = false;
       }
     cell.selected = true;
     currentlySelectedCell = cell;
     chooseTile(context, cell.row, cell.column);
   }
+  if (currentlyHighlightedCell) {
+    currentlyHighlightedCell.highlighted = false;
+    currentlyHighlightedCell = false;
+}
 }
 
+var hackCity = false;
 function highlight(cell) {
           var canvas = document.getElementById("top");
   var context = canvas.getContext("2d");
-  
+  /*
+  if (cell.city) {
+    alert("cell has city");
+    hackCity = true;
+  } else {
+    hackCity = false;
+  }
+  */
   if (cell.selected) {
       // do nothing
+      if (hackCity) {
+        alert("Not highlightinc city, is selected");
+        }
   } else if (cell.highlighted) {
      // do nothing, already highlighted
+           if (hackCity) {
+        alert("Not highlightinc city, is highlighted");
+        }
+
   } else { // not highlighted, could be selected
       // unhighlight previous highlight, unless it is also selected
       if (currentlyHighlightedCell && (currentlyHighlightedCell != currentlySelectedCell)) {
         unchooseTile(context, currentlyHighlightedCell.row, currentlyHighlightedCell.column);
       }
+            if (hackCity) {
+        alert("highlighting");
+        }
+
       // highlight pointed one
       cell.highlighted = true;
       currentlyHighlightedCell = cell;
