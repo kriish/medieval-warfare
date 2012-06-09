@@ -21,16 +21,24 @@ var CITY = 2;
 var METROPOL = 3;
 var DESTROYED = 4;
 
-function City(cell) {
+function City(cell, name) {
     this.location = cell;
     cell.city = this;
     this.name = "new city";
+    if (name) {
+        this.name = name;
+    }
+    
     this.size = TOWN;
     
     function draw_city(context) {
       var icon = new Image();
-      icon.src = "img/weather.jpg";
+      icon.src = "img/city.png";
       context.drawImage(icon, cell.x, cell.y);
+
+        context.font = "bold 16px sans-serif";
+        context.fillText(name, cell.x, cell.y);
+
     }
     this.draw = draw_city;
 }

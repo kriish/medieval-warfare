@@ -2,6 +2,7 @@ var currentlySelectedCell;
 var currentlyHighlightedCell;
 var mapCells=new Array();
 
+
 // x and y are the coordinates clicked based on which we choose the tile
 function chooseTile(context, x,y) {
     x = x - (x % 50);
@@ -73,6 +74,7 @@ function selectSquare(event) {
     var cell = getCell(event); //getCursorPosition(event);
     // ignore right click when tile is already selected
     if (! (event.button != 1 && cell.selected))
+    //if (!cell.selected))
       select(cell);
     
 }

@@ -8,8 +8,8 @@
 <script src="js/cellgrid.js"></script>  
 <script src="js/honeycomb.js"></script>  
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
-        <script src="js/jquery.js" type="text/javascript"></script>
-        <script src="js/jquery.rightClick.js" type="text/javascript"></script>
+        <script src="frontend/jquery.js" type="text/javascript"></script>
+        <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
 
@@ -158,18 +158,14 @@ function drawGrid(context) {
 */
 
 function setBackgroundImage(context) {
-//    var sun = document.getElementById("sun");
-    // or
     var sun = new Image();
-   sun.src = "img/map1.jpg";
-
-  context.drawImage(sun, 0, 0);
-  //alert("test");
+    sun.src = "img/map1.jpg";
+    context.drawImage(sun, 0, 0);
 }
 
-function writeText(context) {
+function writeText(context, text, x, y) {
     context.font = "bold 16px sans-serif";
-    context.fillText("Mamadou", 248, 43);
+    context.fillText(text, x, y);
 //    context.fillText("y", 58, 165);
 }
 
@@ -186,7 +182,6 @@ var mouseX = e.clientX - canvas.offsetLeft;
    } else {
        console.log("out of region");
        drawEventDisplay(context,"outta here");
-
     }
     
     highlightTile(mouseX, mouseY);
@@ -194,14 +189,19 @@ var mouseX = e.clientX - canvas.offsetLeft;
 }
 
 function getActionContext() {
-      var topCanvas = document.getElementById("action");
+  var topCanvas = document.getElementById("action");
   var topContext = topCanvas.getContext("2d");
   return topContext;
-    }
+}
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
-    var newCity = new City(currentlySelectedCell);
+    
+    //getCityName
+    var cityName = document.getElementById("cityName").value;
+    alert("Creating new city called " + cityName);
+    var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
+    //writeText(getActionContext(), cityName, 200, 200);
 }
 function createCityBackend() {
     //call backend
@@ -209,6 +209,7 @@ function createCityBackend() {
     { }
     */
 }
+
 function createMonument() {
     var newCity = new City(currentlySelectedCell);
     newCity.draw(getActionContext());
@@ -234,24 +235,6 @@ function submitRound() {
     alert('TODO');
 }
 
-//window.onload = function() {
-function onloadsave() {
-  var mapCanvas = document.getElementById("map");
-  var mapContext = mapCanvas.getContext("2d");
-  setBackgroundImage(mapContext);
- 
-  var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
-  writeText(topContext);
-  topCanvas.addEventListener("click", selectSquare, false);
-//  topCanvas.addEventListener("mouseup", selectSquare, false);
-//  drawGrid(context);
-//  honeycomb(topContext);
-//  selectHoneycomb(topContext);
-//regionListeners(topCanvas, topContext);
-  topCanvas.addEventListener("mousemove", handleMouseover, false);
-  Init();
-}
 //-->
 </script>
 
@@ -295,36 +278,46 @@ function onloadsave() {
  <canvas id="action" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
  <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
 </div>
-<div id="info" style="position: relative;left:600px;">
-This is the info chart<br>
-<p>
-<h2>Create city</h2>
-City name <input id="cityName" type="text"/>
-<button onsubmit="callCreate">Create</button><button>Cancel</button>
-</p>
-<p>
-<h2>Create troops</h2>
-Troop name <input name="troopName" type="text"/>
-Troop type <select><option>Infantry</option><option>Horsemen</option></select>
-Troop size <input name="troopSize" type="text"/>
+<div id="info"><!-- style="position: relative;left:600px;"-->
+<h2 id="playerName">Player 1</h2>
+<h3>Cities</h3>
+City 1 (TODO)
+City 2 (TODO)
+
+<h3>Troops</h3>
+Troop 1 (TODO)
+</div>
+<!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
+<div id="info"><!-- style="position: relative;left:600px;"-->
+<h2 id="roundName">Round 1</h2>
+<h3>Create city</h3>
+New City 1 <button>Cancel</button><br>
+City name <input id="cityName" type="text"/> <button onclick="createCity();false;">Create</button>
+
+<h3>Create troops</h3>
+Troop 1 <button>Remove</button><br>
+Troop name <input name="troopName" type="text"/><br>
+Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>
+Troop size <input name="troopSize" type="text"/><br>
 <button>Create</button><button>Cancel</button>
-</p>
 <p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
 </div>
-<!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 
 <script>
 //<!--
 window.onload = function() {
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
+  
+  // login popup + button start game
+  
   setBackgroundImage(mapContext);
 
   var topCanvas = document.getElementById("top");
   var topContext = topCanvas.getContext("2d");
-  writeText(topContext);
+  writeText(topContext, "Mamadou", 248, 43);
   topCanvas.addEventListener("click", selectSquare, false);
 //  topCanvas.addEventListener("mouseup", selectSquare, false);
 //  drawGrid(context);
