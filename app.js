@@ -32,34 +32,54 @@ app.configure('production', function(){
 
 //app.get('/', routes.index);
 
-app.post('/joingame/', function(request, response) {
+app.post('/joinGame/', function(request, response) {
 	
-	if ( request.method === 'POST' ) {
-	
-		var data = '';
-		request.addListener('data', function(chunk) { data += chunk; });
-		request.addListener('end', function() {
-			console.log("received data is :" + data);
-			
-			var playerInfo = JSON.parse(data);
-			
-			// let the gamemaster handles the incoming data
-			result = gameMaster.handleJoinGame(playerInfo);
+	var data = '';
+	request.addListener('data', function(chunk) { data += chunk; });
+	request.addListener('end', function() {
+		console.log("received data is :" + data);
 
-			response.writeHead(200, {'content-type': 'text/json' });
+		var playerInfo = JSON.parse(data);
 
-			response.write(JSON.stringify(result));
-			
-			response.end();
-			
+		// let the gamemaster handles the incoming data
+		result = gameMaster.handleJoinGame(playerInfo);
+
+		response.writeHead(200, {
+			'content-type' : 'text/json'
 		});
-		
-	}
+
+		response.write(JSON.stringify(result));
+
+		response.end();
+
+	});
+
 });
 
 
 app.post('/submitRound/', function(request, response) {
-	gameMaster.handleSubmitRound();
+	var data = '';
+	request.addListener('data', function(chunk) { data += chunk; });
+	
+	request.addListener('end', function() {
+		console.log("received data is :" + data);
+
+		var roundInfo = JSON.parse(data);
+
+		// let the gamemaster handles the incoming data
+		result = gameMaster.handleSubmitRound(roundInfo);
+
+
+		response.writeHead(200, {
+			'content-type' : 'text/json'
+		});
+
+		response.write(JSON.stringify(result));
+
+		response.end();
+
+	});
+
 });
 
 

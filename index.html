@@ -153,7 +153,7 @@ function getCreatedCities() {
 
 function submitRound() {
     var submitJson = {};
-    submitJson['player'] = "Playername";
+    submitJson['player'] = frontEndPlayer.
     submitJson['create'] = [];
     for (var city in pendingCities) {
         submitJson['create'].push(pendingCities[city]);
@@ -268,6 +268,10 @@ window.onload = function() {
 		  console.log("continue joining with the following initiliazation data" + data);
 		  
 		  alert('server returned ' + JSON.stringify(data));
+		  
+		  frontEndPlayer = data.player; // backend return the newly created player
+		  alert("gamestarted = " + data.gameStarted);
+		  
 		  var topCanvas = document.getElementById("top");
 		  var topContext = topCanvas.getContext("2d");
 		  writeText(topContext, "Mamadou", 248, 43);

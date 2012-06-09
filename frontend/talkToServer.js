@@ -1,3 +1,6 @@
+
+var frontEndPlayer = new Object();
+
 function sendToServer(actionID, data, callback) {
 	$.ajax('/'+actionID+'/', {
 		type : 'POST',
@@ -21,5 +24,15 @@ function joinTheGame(playerName, callback) {
     
     submitJson.playerName = playerName;
 	
-	sendToServer('joingame', submitJson, callback);	
+	sendToServer('joinGame', submitJson, callback);	
+}
+
+
+function submitRound(roundInfo, callback) {
+    var submitJson = new Object();
+    
+    submitJson.playerName = playerName;
+	
+	sendToServer('submitRound', submitJson, callback);	
+	
 }

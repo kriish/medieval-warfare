@@ -4,8 +4,9 @@ var player = require("../js/player");
 // the initial money a player can get
 var player_initial_money = 1000;
 
+var totalNumOfPlayers = 2;	// the total number of players expected
 
-var players = new Object();
+var players = new Array();
 
 function createJoinPlayerResult( successfulOrNot ) {
 
@@ -13,6 +14,7 @@ function createJoinPlayerResult( successfulOrNot ) {
 	this.indication = successfulOrNot;
 	
 	// some other information??
+
 }
 
 // new user joins the game
@@ -30,36 +32,45 @@ function handleJoinGame(playerInfo) {
 		return createJoinPlayerResult(false);
 	}
 	
-	for (key in players) {
-		if (key == newPlayerName) {
+	for (var i = 0; i < players.length; i++) {
+		if (players[i].id == newPlayerName) {
 			console.log("player " + newPlayerName + " is joining again?");
-			return  createJoinPlayerResult(false);
+			return new createJoinPlayerResult(false);
 		}
 	}
 
 	newPlayer = new player.player(newPlayerName, player_initial_money);
 	
 	// save the player in the global variable;
-	players[newPlayer.id] = newPlayer;
+	players[players.length] = newPlayer;
 	
 	console.log("new player " + newPlayer.id + " added!");
 	
 	result = new createJoinPlayerResult(true);
-	result["player"] = newPlayer;
+	result.player = newPlayer;
+	
+	
+	// check if we can start the game now and see whose turn it is
+	if ( players.length == totalNumOfPlayers ) {
+		result.gameStarted = true;
+		//TODO decide whose turn it is		
+	} else {
+		result.gameStarted = false;
+	}
 	
 	return result;
 	
 }
 
 
-// handle incoming data from client
-function handleData (clientRequestData) {
-	console.log("received ", clientRequestData);
-
-	if (clientRequestData["action"] == "joinGame") {
-		
-	}
-	return clientRequestData;
+function handleSubmitRound(roundInfo) {
+	// OK, we need some game master logic here
+	
+	// which player is this?
+	currPlayer = players[roundInfo.playerName];
+	
+	console.log("currPlayer is" + JSON.stringify(currPlayer));
 }
 
 exports.handleJoinGame = handleJoinGame;
+exports.handleSubmitRound = handleSubmitRound;
