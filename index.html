@@ -74,38 +74,6 @@ var eventDisplay = "test";
         context.fillText(text, 10, 25);
     }
 
-function regionListeners(canvas, context) {
-    var myStage = new Kinetic.Stage(canvas);
-           // draw darth vader image and attach listeners
-            myStage.beginRegion();
-//            context.drawImage(darthVaderImg, 100, 50, 200, 137);
-            // draw rectangular region for image
-            context.beginPath();
-            context.rect(50, 50, 200, 200);
-            context.closePath();
- 
-            myStage.addRegionEventListener("onmouseover", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseover!";
-            });
-            myStage.addRegionEventListener("onmouseout", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseout!";
-            });
-            myStage.addRegionEventListener("onmousedown", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mousedown!";
-            });
-            myStage.addRegionEventListener("onmouseup", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseup!";
-            });
-            myStage.closeRegion();
-            drawRegionDisplay(context);
-}    
-    
-
-
 
 function setBackgroundImage(context) {
     var sun = new Image();
@@ -142,7 +110,7 @@ function getMapContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
-var pendingCities = {};
+var pendingCities = new Array();
 var pendingTroops = {};
 
 function createCity() {
@@ -151,7 +119,10 @@ function createCity() {
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
-    pendingCities[cityName] = { name : cityName, cell: currentlySelectedCell };
+    var cityJson = { 'type': 'city', 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
+    console.log("New city: " + JSON.stringify(cityJson));
+    pendingCities[cityName] = cityJson;
+//    alert("PendingCities: " + JSON.stringify(cityJson));
     $("#pendingCities").append(cityName + " <button>Delete</button><br>");
 }
 
@@ -160,7 +131,7 @@ function createTroop() {
     alert("Creating new troop called " + name);
     var troop = new City(currentlySelectedCell, name);
     troop.draw(getActionContext());
-    pendingTroops[cityName] = { 'name' : name, cell: currentlySelectedCell };
+    pendingTroops[cityName] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 
@@ -173,11 +144,26 @@ function troopInfo() {
   info.innerHTML = "TODO troop info";
 }
 
+function getCreatedCities() {
+    var json = {};
+    json.type = 'city';
+    json;
+}
 function submitRound() {
     var submitJson = {};
     submitJson['player'] = "Playername";
-    submitJson['create'] = {}; 
-    alert(JSON.stringify(submitJson));
+    submitJson['create'] = [];
+    for (var city in pendingCities) {
+        submitJson['create'].push(pendingCities[city]);
+        
+    }
+    
+    for (var troop in pendingTroops) {
+        submitJson['create'].push(pendingTroops[troop]);
+        
+    }
+
+alert(JSON.stringify(submitJson));
     //sendToServer();
 }
 
