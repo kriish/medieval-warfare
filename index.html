@@ -261,7 +261,6 @@ window.onload = function() {
   // login popup + button start game
   var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
   
-<<<<<<< HEAD
   joinTheGame(playerName, function(successful, data) {
 
 	  if (successful) {
@@ -269,41 +268,23 @@ window.onload = function() {
 		  console.log("continue joining with the following initiliazation data" + data);
 		  
 		  alert('server returned ' + JSON.stringify(data));
-		  
-		  setBackgroundImage(mapContext);
-	
 		  var topCanvas = document.getElementById("top");
 		  var topContext = topCanvas.getContext("2d");
 		  writeText(topContext, "Mamadou", 248, 43);
 		  topCanvas.addEventListener("click", selectSquare, false);
-		// topCanvas.addEventListener("mouseup", selectSquare, false);
+		//  topCanvas.addEventListener("mouseup", selectSquare, false);
+		    setBackgroundImage2(mapCanvas, mapContext);
 		  drawGrid(mapContext);
-		// honeycomb(topContext);
-		// selectHoneycomb(topContext);
-		// regionListeners(topCanvas, topContext);
+		//  honeycomb(topContext);
+		//  selectHoneycomb(topContext);
+		//regionListeners(topCanvas, topContext);
 		  topCanvas.addEventListener("mousemove", handleMouseover, false);
 		  Init();
+		  
+//		    setBackgroundImage(mapContext);
+
 	  }
   })
-=======
-
-  var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
-  writeText(topContext, "Mamadou", 248, 43);
-  topCanvas.addEventListener("click", selectSquare, false);
-//  topCanvas.addEventListener("mouseup", selectSquare, false);
-    setBackgroundImage2(mapCanvas, mapContext);
-  drawGrid(mapContext);
-//  honeycomb(topContext);
-//  selectHoneycomb(topContext);
-//regionListeners(topCanvas, topContext);
-  topCanvas.addEventListener("mousemove", handleMouseover, false);
-  Init();
-  
-//    setBackgroundImage(mapContext);
-
-    
->>>>>>> 720990c1b85f0811ded3d8b224b8ab8d9b16d9a5
 }
 //-->
 </script>
