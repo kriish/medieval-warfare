@@ -88,11 +88,11 @@ function cityNameFinished() {
             // end of context menu
 
 function canvasWidth() {
-  return 600;
+  return 640;
   }
     
 function canvasHeight() {
-    return 600;
+    return 560;
 }
 var eventDisplay = "test";
     function drawRegionDisplay(context){
@@ -137,25 +137,8 @@ function regionListeners(canvas, context) {
             drawRegionDisplay(context);
 }    
     
-/*
-function drawGrid(context) {
-    var cellSize = 50;
-  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
-    context.moveTo(x, 0);
-    context.lineTo(x, canvasHeight());
-  }
- 
-  for (var y = 0.5; y < canvasHeight(); y += cellSize) {
-    context.moveTo(0, y);
-    context.lineTo(canvasWidth(), y);
-  }    
-  
-  context.strokeStyle = "#ee0";
-  context.stroke();
-  
-//  chooseTile(context, 0, 0);
-}
-*/
+
+
 
 function setBackgroundImage(context) {
     var sun = new Image();
@@ -193,6 +176,13 @@ function getActionContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
+
+function getMapContext() {
+  var topCanvas = document.getElementById("map");
+  var topContext = topCanvas.getContext("2d");
+  return topContext;
+}
+
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
     
@@ -320,7 +310,7 @@ window.onload = function() {
   writeText(topContext, "Mamadou", 248, 43);
   topCanvas.addEventListener("click", selectSquare, false);
 //  topCanvas.addEventListener("mouseup", selectSquare, false);
-//  drawGrid(context);
+  drawGrid(mapContext);
 //  honeycomb(topContext);
 //  selectHoneycomb(topContext);
 //regionListeners(topCanvas, topContext);
