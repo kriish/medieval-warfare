@@ -1,7 +1,9 @@
 function Cell(row, column) {
+    var cellX = 25;
+    var cellY = 25;
     this.row = row;
-    this.x = row - (row % 50);
-    this.y = column - (column % 50);;
+    this.x = row - (row % cellX);
+    this.y = column - (column % cellY);;
     this.column = column;
     
     this.highlighted = false;

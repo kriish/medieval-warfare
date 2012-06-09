@@ -14,40 +14,6 @@
 <script type="text/javascript">
 <!--
 
-// city name
-function hideCityName() {
-    $('#new-city-name').hide(); // city-name
-}
-function showCityName() {
-    $('#new-city-name').show(); // city-name
-    $('#new-city-name').offset({ top: mouseY, left: mouseX });
-//	$('#new-city-name').width($(contextName).width());
-//	$('#new-city-name').height($(contextName).height());
-
-}
-function initCityName() {}
-function keyPressedCallback(event) {
-           event = event || window.event;
-
-           if (event.metaKey)
-             return;
-
-           var keyChar =String.fromCharCode(o3djs.event.getEventKeyChar(event));
-           keyChar = keyChar.toLowerCase();
-    $('#city-name').append(keyChar);
-    
-         }
-function getCityName(nameFinished) {
-  var name = false;
-  window.document.onkeypress = keyPressedCallback;
-  showCityName();
-  
-  return name;
-}
-function cityNameFinished() {
-
-}
-// eof city name
 
 // start of context menu
 
@@ -183,7 +149,8 @@ function getMapContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
-
+var pendingCities = {};
+var pendingTroops = {};
 // TODO third middle canvas for cities and troops? now top
 function createCity() {
     
@@ -193,6 +160,8 @@ function createCity() {
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
+    pendingCities[cityName] = { name : cityName, cell: currentlySelectedCell };
+    $("#pendingCities").append(cityName + " <button>Delete</button><br>");
 }
 function createCityBackend() {
     //call backend
@@ -206,8 +175,14 @@ function createMonument() {
     newCity.draw(getActionContext());
 }
 function createTroop() {
-    var newCity = new City(currentlySelectedCell);
+    //getCityName
+    var name = document.getElementById("cityName").value;
+    alert("Creating new city called " + cityName);
+    var newCity = new City(currentlySelectedCell, name);
     newCity.draw(getActionContext());
+    //writeText(getActionContext(), cityName, 200, 200);
+    pendingTroops[cityName] = { 'name' : name, cell: currentlySelectedCell };
+    $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 function createMine() {
     var newCity = new City(currentlySelectedCell);
@@ -272,25 +247,27 @@ function submitRound() {
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3>Cities</h3>
-City 1 (TODO)
-City 2 (TODO)
-
+<div id="cityList">
+No Cities
+</div>
 <h3>Troops</h3>
-Troop 1 (TODO)
+<div id="cityList">
+No Troops
+</div>
 </div>
 <!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="roundName">Round 1</h2>
-<h3>Create city</h3>
-New City 1 <button>Cancel</button><br>
+<h3 id="createCity">Create city</h3>
+<div id="pendingCities"></div>
 City name <input id="cityName" type="text"/> <button onclick="createCity();false;">Create</button>
 
 <h3>Create troops</h3>
-Troop 1 <button>Remove</button><br>
+<div id="pendingTroops"></div>
 Troop name <input name="troopName" type="text"/><br>
-Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>
-Troop size <input name="troopSize" type="text"/><br>
-<button>Create</button><button>Cancel</button>
+<!--Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>-->
+Troop size <input name="troopSize" type="text" value="100"/><br>
+<button>Create</button>
 <p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
