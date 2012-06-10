@@ -39,6 +39,16 @@ function getPlayerNames() {
 	return playerNames;
 }
 
+function getPlayerByName(playerName) {
+	for (var i = 0; i < players.length; i++) {
+		if (playerName == players[i].id) {
+			return players[i];
+		}
+	}
+	
+	return ;
+}
+
 // get the current round number
 function getRoundNumber() {
 	return currRoundNumber;
@@ -72,6 +82,8 @@ function notifyRoundInfoToAllPlayers(roundInfo) {
 			pendingResponse.end();	
 			
 			writeLog("notified " + players[i].id);
+			
+			players[i].pendingResponse = false;
 		}
 	}
 	
@@ -158,22 +170,50 @@ function handleJoinGame(playerInfo) {
 }
 
 
-function handleSubmitRound(submitRoundInfo) {
+function handleSubmitRound(submitRoundInfo, response) {
 	// OK, we need some game master logic here
 	console.log( "handleSubmitRound: " + JSON.stringify(submitRoundInfo));
 
 	// which player is this?
-	var currPlayer = players[submitRoundInfo.player];
+	var currPlayer = getPlayerByName(submitRoundInfo.player);
+
+	if (!currPlayer) {
+		response.writeHead(400, {
+			'content-type' : 'text'
+		});
+
+		response.write("No such user as " + submitRoundInfo.player);
+
+		response.end();
+		return;
+	}
 	
-	 writeLog("player submitted round:" + currPlayer);
+	writeLog("player " + currPlayer.id + " has submitted round!");
 	
-	//TODO: switch to next player() and also notify all other players what's going on with the game
-<<<<<<< HEAD
-	return submitRoundInfo;
-=======
+	// just acknowledge this submission
+	var submissionResult = new Object();
+	submissionResult.indication = true; // just let it be successful;
+	response.writeHead(200, {
+		'content-type' : 'text/json'
+	});
+
+	response.write(JSON.stringify(submissionResult));
+
+	response.end();
+
+	//switch to next player() and also notify all other players what's going on with the game
+	switchToNextPlayer();
 	
-	writeLog("Sending turnCompleted :" + JSON.stringify(roundInfo));
->>>>>>> 6831eeb31ece80abe9e37622fec3870e319857dc
+	// notify the latest status to all players! (maybe we can skip the current one)
+	var newRoundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
+
+	var notification = new Object();
+	notification.status="turnCompleted";
+	notification.lastSubmitRoundInfo = submitRoundInfo;
+	notification.roundInfo = newRoundInfo;
+
+	writeLog("broadcasting turnCompleted :\n" + JSON.stringify(notification));
+
 	
 	for (var i = 0; i < players.length; i++) {
 		var pendingResponse = players[i].pendingResponse;
@@ -182,14 +222,13 @@ function handleSubmitRound(submitRoundInfo) {
 			pendingResponse.writeHead(200, {
 				'content-type' : 'text/json'});
 
-			var event = {};
-			event.status="turnCompleted";
-			event.roundInfo = roundInfo;
-			pendingResponse.write(JSON.stringify(event));
+			pendingResponse.write(JSON.stringify(notification));
 
 			pendingResponse.end();	
 			
 			writeLog("notified " + players[i].id);
+			
+			players[i].pendingResponse = false;
 		}
 	}
 
@@ -219,10 +258,11 @@ function handleClientSubscription(playerInfo, response) {
 
 				thePlayer.pendingResponse.end();				
 				
+				players[i].pendingResponse = false;
 			}
 			
 			// save the new pending request
-			thePlayer.pendingResponse = response;
+			players[i].pendingResponse = response;
 		}
 	}
 

@@ -67,16 +67,7 @@ app.post('/submitRound/', function(request, response) {
 		var submitedRoundInfo = JSON.parse(data);
 
 		// let the gamemaster handles the incoming data
-		result = gameMaster.handleSubmitRound(submitedRoundInfo);
-
-
-		response.writeHead(200, {
-			'content-type' : 'text/json'
-		});
-
-		response.write(JSON.stringify(result));
-
-		response.end();
+		result = gameMaster.handleSubmitRound(submitedRoundInfo, response);
 
 	});
 

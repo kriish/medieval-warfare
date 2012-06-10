@@ -350,6 +350,8 @@ function handleNotifications(notification) {
         }
          
     }
+    
+    
 }
 function updatePlayerInfo(data) {
     $("#playerName").replaceWith("<h2 id='playerName'>"+ frontEndPlayer.id+"</h2>");
@@ -400,13 +402,18 @@ submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
 		  topCanvas.addEventListener("mousemove", handleMouseover, false);
 		  Init();
 
-		  setInterval(
-				  subscribeToServer(frontEndPlayer.id,  
-						  function(success, notification) {
-					  			handleNotifications(notification);
-				  			}),
-				  30000);
-                  
+//		  setInterval(
+//				  subscribeToServer(frontEndPlayer.id,  
+//						  function(success, notification) {
+//					  			handleNotifications(notification);
+//				  			}),
+//				  30000);
+
+		  subscribeToServer(frontEndPlayer.id,  
+				  function(success, notification) {
+			  			handleNotifications(notification);
+		  			});  
+		  
 	  } // end of successful
 
   }); // end of joinTheGame

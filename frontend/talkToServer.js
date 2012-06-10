@@ -39,7 +39,10 @@ function subscribeToServer(playerName, callback) {
 
 	submitJson.playerName = playerName;
 
-	sendToServer('subscribeToServer', submitJson, callback);
+	sendToServer('subscribeToServer', submitJson, function(success, data) {
+		callback(success, data);
+		subscribeToServer(playerName, callback);
+	});
 	
 };
 
