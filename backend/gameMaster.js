@@ -49,10 +49,13 @@ function notifyNextPlayer() {
 	
 }
 
+function writeLog(msg){
+	console.log(getTimeStampStr() + " -- " + msg);
+}
 
 // update all players with game info
 function notifyRoundInfoToAllPlayers(roundInfo) {
-	console.log("notifyRoundInfoToAllPlayers :" + JSON.stringify(roundInfo));
+	writeLog("notifyRoundInfoToAllPlayers :" + JSON.stringify(roundInfo));
 	
 	for (var i = 0; i < players.length; i++) {
 		var pendingResponse = players[i].pendingResponse;
@@ -66,30 +69,31 @@ function notifyRoundInfoToAllPlayers(roundInfo) {
 			event.roundInfo = roundInfo;
 			pendingResponse.write(JSON.stringify(event));
 
-			pendingResponse.end();				
+			pendingResponse.end();	
 			
+			writeLog("notified " + players[i].id);
 		}
 	}
 	
 }
 
 
-//function getTimeStampStr(){
-//	var currentTime = new Date();
-//
-//	var hours = currentTime.getHours();
-//	var minutes = currentTime.getMinutes();
-//	var seconds = currentTime.getSeconds();
-//	if (minutes < 10) {
-//		minutes = "0" + minutes;
-//	}
-//
-//	if (seconds < 10) {
-//		seconds = "0" + seconds;
-//	}
-//	
-//	return hours+":"+minutes+","+seconds;
-//}
+function getTimeStampStr(){
+	var currentTime = new Date();
+
+	var hours = currentTime.getHours();
+	var minutes = currentTime.getMinutes();
+	var seconds = currentTime.getSeconds();
+	if (minutes < 10) {
+		minutes = "0" + minutes;
+	}
+
+	if (seconds < 10) {
+		seconds = "0" + seconds;
+	}
+	
+	return hours+":"+minutes+":"+seconds;
+}
 
 function createJoinPlayerResult( successfulOrNot ) {
 
@@ -136,6 +140,9 @@ function handleJoinGame(playerInfo) {
 	// check if we can start the game now and see whose turn it is
 	if ( players.length == totalNumOfPlayers ) {
 		result.gameStarted = true;
+		
+		writelog("game started!!!");
+		
 		result.roundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
 //		result.currentPlayer = players[getCurrPlayer()].id;
 		//TODO notify all players
@@ -144,7 +151,7 @@ function handleJoinGame(playerInfo) {
 		result.gameStarted = false;
 	}
 	
-	console.log(JSON.stringify(result));
+//	console.log(JSON.stringify(result));
 	
 	return result;
 	
