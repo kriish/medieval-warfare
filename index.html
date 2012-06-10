@@ -269,6 +269,7 @@ alert(JSON.stringify(submitJson));
  </div>
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
+<h3 id="roundStatus">Waiting opponent...</h3>
 <h3>Cities</h3>
 <div id="cityList">
 No Cities
@@ -311,6 +312,16 @@ function setBackgroundImage2(mapCanvas, mapContext) {
       }
     
 }
+
+function handleNotifications(notification) {
+	alert("received notification from server " + notification);
+    if (notification.status === "ignore") {
+        // dummy message
+    } else if (notification.status === "gameStarted") {
+        // print out opponent name
+    }
+}
+
 window.onload = function() {
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
@@ -324,11 +335,11 @@ window.onload = function() {
 	  
 		  console.log("continue joining with the following initiliazation data" + data);
 		  
-//		  alert('server returned ' + JSON.stringify(data));
+		  alert('server returned ' + JSON.stringify(data));
 		  
 		  frontEndPlayer = data.player; // backend return the newly created player
 //		  alert("gamestarted = " + data.gameStarted);
-        
+        // show money
 		  $("#playerName").replaceWith("<h2 id='playerName'>"+ playerName+"</h2>");
           console.log("player name field: " + $("#playerName"));
 		  var topCanvas = document.getElementById("top");
@@ -344,7 +355,7 @@ window.onload = function() {
 		  setInterval(
 				  subscribeToServer(frontEndPlayer.id,  
 						  function(notification) {
-					  			handleNotification(notification);
+					  			handleNotifications(notification);
 				  			}),
 				  30000);
                   
