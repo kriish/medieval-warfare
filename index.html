@@ -14,6 +14,7 @@
 <script type="text/javascript">
 <!--
 
+$("body").append('<div class="modalOverlay">');
 // city name
 function hideCityName() {
     $('#new-city-name').hide(); // city-name
@@ -164,6 +165,8 @@ function setBackgroundImage(context) {
     context.drawImage(sun, 0, 0);
 }
 
+
+
 function writeText(context, text, x, y) {
     context.font = "bold 16px sans-serif";
     context.fillText(text, x, y);
@@ -236,8 +239,113 @@ function submitRound() {
     alert('TODO');
 }
 
+function setBackgroundImage(context) {
+    var sun = new Image();
+    sun.src = "map.jpg";
+    context.drawImage(sun, 0, 0);
+}
+
+function myPop() { 
+    this.square = null;
+    this.overdiv = null;
+
+    this.popOut = function(msgtxt) {
+        this.overdiv = document.createElement("div");
+        this.overdiv.className = "overdiv";
+
+        this.square = document.createElement("div");
+        this.square.className = "square";
+        this.square.Code = this;
+    	
+        var msg = document.createElement("div");
+        msg.className = "msg";
+        msg.innerHTML = msgtxt;
+        this.square.appendChild(msg);
+		
+		
+		//var name =document.createElement("div");
+		//name.innerHTML=nametxt;
+		
+		//this.square.appendChild("Name");
+		
+		var inpTxt = document.createElement("div");
+        this.square.appendChild(inpTxt);
+		inpTxt.innerHTML="<input type='text'/>";
+		inpTxt.align="center";
+
+		var btnt = document.createElement("div");
+        this.square.appendChild(btnt);
+		btnt.innerHTML="<input type='button'/>";
+		btnt.innerHTML = "Start";
+		btnt.align="center";
+		
+		
+        //var closebtn = document.createElement("button");
+		//closebtn.align="center";
+        btnt.onclick = function() {
+            this.parentNode.Code.popIn();
+        }
+		
+		//closebtn.onclick = function() {
+        //    this.parentNode.Code.popIn();
+        //}
+		
+		
+        //closebtn.innerHTML = "Play";
+        //this.square.appendChild(closebtn);
+		//closebtn.align="center";
+		
+        document.body.appendChild(this.overdiv);
+        document.body.appendChild(this.square);
+    }
+	
+    this.popIn = function() {
+        if (this.square != null) {
+            document.body.removeChild(this.square);
+            this.square = null;
+        }
+        if (this.overdiv != null) {
+        document.body.removeChild(this.overdiv);
+        this.overdiv = null;
+        }
+
+    }
+}
+
+
+
+
+
 //-->
 </script>
+
+<script type="text/javascript" src="NAME OF THE PAGE!.js"></script>
+    <style>
+        div.overdiv { filter: alpha(opacity=75);
+                      -moz-opacity: .75;
+                      opacity: .75;
+                      background-color: #c0c0c0;
+                      position: absolute;
+                      top: 0px;
+                      left: 0px;
+                      width: 100%; height: 100%;z-index:200; }
+
+        div.square { position: absolute;
+                     top: 200px;
+                     left: 500px;
+                     background-color: Menu;
+                     border: #f9f9f9;
+                     height: 250px;
+                     width: 370px;
+    				background-image:url('img/map.jpg');
+                     z-index:200;}
+    				 
+        div.square div.msg { color: #3e6bc2;
+                             line-height:100%;    
+                             font-size: 30px;
+							 text-align: center;
+                             padding: 15px; }				 
+    </style>
 
 </head>
 <body><!-- onload="Init();"-->
@@ -279,6 +387,7 @@ function submitRound() {
  <canvas id="action" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
  <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
 </div>
+
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3>Cities</h3>
@@ -306,14 +415,20 @@ Troop size <input name="troopSize" type="text"/><br>
 </p>
 </div>
 
+
 <script>
 //<!--
 window.onload = function() {
+    
+  
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
   
   // login popup + button start game
-  
+  //var begin_namepopup=prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
+  var pop = new myPop();
+  pop.popOut("");
+    
   setBackgroundImage(mapContext);
 
   var topCanvas = document.getElementById("top");
@@ -326,6 +441,9 @@ window.onload = function() {
 //  selectHoneycomb(topContext);
 //regionListeners(topCanvas, topContext);
   topCanvas.addEventListener("mousemove", handleMouseover, false);
+  
+   
+  
   Init();
 }
 //-->
