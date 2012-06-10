@@ -3,12 +3,19 @@ var currentlyHighlightedCell;
 var mapCells=new Array();
 var cellX = 25; 
 var cellY = 25;
+var troopMoving = false;
+var troopCallback = false;
 
 // x and y are the coordinates clicked based on which we choose the tile
 function chooseTile(context, x,y) {
+    var fillColor = "rgba(0, 0, 200, 0.5)";
+    var troopColor = "rgba(0, 200, 0, 0.5)";
     x = x - (x % cellX);
     y = y - (y % cellY);
-    context.fillStyle = "rgba(0, 0, 200, 0.5)";
+    context.fillStyle = fillColor;
+    if (troopMoving) {
+        context.fillStyle = troopColor;
+    }
    context.fillRect(0.5 + x, 0.5 + y,cellX + 0.5, cellY + 0.5);
    
 //   context.strokeStyle = "#ff0";
@@ -99,6 +106,9 @@ function select(cell) {
     cell.selected = true;
     currentlySelectedCell = cell;
     chooseTile(context, cell.row, cell.column);
+    if (troopCallback) {
+        troopCallback(cell);
+    }
   }
   if (currentlyHighlightedCell) {
     currentlyHighlightedCell.highlighted = false;

@@ -130,7 +130,7 @@ function createTroop() {
     var name = document.getElementById("troopName").value;
     alert("Creating new troop called " + name);
     var troop = new Troop(currentlySelectedCell, name);
-    troop.draw(getActionContext());
+    troop.draw(getActionContext(), currentlySelectedCell);
     pendingTroops[name] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
@@ -144,6 +144,58 @@ function troopInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO troop info";
 }
+knight = new Image(25,30);
+knight.src = 'troop.png'
+
+var knightObj = {x: 30, y:60};
+
+function drawTroop(){
+    var ctx = document.getElementById('action').getContext("2d");
+	ctx.save();
+	ctx.drawImage(knight, knightObj.x, knightObj.y);
+	//setTimeout(drawKnight,300);
+	ctx.restore();
+
+}
+
+function moveTroopTo(dir){
+	var ctx = document.getElementById('playerLayer').getContext("2d");
+	ctx.clearRect(knightObj.x,knightObj.y,25,30);
+	if(dir == 'up'){
+		if(knightObj.y >30){
+			knightObj.y-=10;
+		}
+	}
+	if(dir == 'down'){
+		if(knightObj.y < 120){
+			knightObj.y+=10;
+			}
+	}
+	drawKnight();
+}
+
+function troopStill() {
+    troopCallback = false;
+}
+function moveTroop() {
+//    var name = document.getElementById("troopName").value;
+//    alert("Creating new troop called " + name);
+    var troop = currentlySelectedCell.troop;
+    if (troop) {
+        troopMoving = true;
+        troopCallback = function(destCell) {
+            // animate troop moving
+            alert("moving");
+            troop.moveTo(getActionContext(), destCell);
+//            moveTroopTo("up");
+            troopMoving = false;
+            troopStill();
+        }
+        //troop.draw(getActionContext());
+    } else {
+        alert("No troops to move in the selected area");
+    }
+}
 
 function getCreatedCities() {
     var json = {};
@@ -153,7 +205,7 @@ function getCreatedCities() {
 
 function submitRound() {
     var submitJson = {};
-    submitJson['player'] = frontEndPlayer.
+    submitJson['player'] = frontEndPlayer.id;
     submitJson['create'] = [];
     for (var city in pendingCities) {
         submitJson['create'].push(pendingCities[city]);
@@ -181,6 +233,8 @@ alert(JSON.stringify(submitJson));
 <button onclick="createMine();return false;">Create mine</button>
 <button onclick="createTroop();return false;">New troop</button-->
 <img style="display: none" src="img/map1.jpg"/>
+<img style="display: none" src="img/troop.jpg"/>
+<img style="display: none" src="img/city.jpg"/>
 <div id="context-menu-bkg" style="display: none;"></div>
 		<div id="context" class="context-menu">
 			<div class="menu-item allow-hover" onclick="createCity(); HideContextMenu();">Create city</div>
@@ -238,6 +292,9 @@ Troop name <input id="troopName" type="text"/><br>
 Troop size <input id="troopSize" type="text" value="100"/><br>
 <button onclick="createTroop();false;">Create</button>
 <p>
+<button onclick="moveTroop();false;">Move</button>
+</p>
+<p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
 </div>
@@ -267,25 +324,22 @@ window.onload = function() {
 	  
 		  console.log("continue joining with the following initiliazation data" + data);
 		  
-		  alert('server returned ' + JSON.stringify(data));
+//		  alert('server returned ' + JSON.stringify(data));
 		  
 		  frontEndPlayer = data.player; // backend return the newly created player
-		  alert("gamestarted = " + data.gameStarted);
-		  
+//		  alert("gamestarted = " + data.gameStarted);
+        
+		  $("#playerName").replaceWith("<h2 id='playerName'>"+ playerName+"</h2>");
+          console.log("player name field: " + $("#playerName"));
 		  var topCanvas = document.getElementById("top");
 		  var topContext = topCanvas.getContext("2d");
-		  writeText(topContext, "Mamadou", 248, 43);
+		  //writeText(topContext, "Mamadou", 248, 43);
 		  topCanvas.addEventListener("click", selectSquare, false);
 		//  topCanvas.addEventListener("mouseup", selectSquare, false);
 		    setBackgroundImage2(mapCanvas, mapContext);
 		  drawGrid(mapContext);
-		//  honeycomb(topContext);
-		//  selectHoneycomb(topContext);
-		//regionListeners(topCanvas, topContext);
 		  topCanvas.addEventListener("mousemove", handleMouseover, false);
 		  Init();
-		  
-//		    setBackgroundImage(mapContext);
 
 		  setInterval(
 				  subscribeToServer(frontEndPlayer.id,  
@@ -293,6 +347,7 @@ window.onload = function() {
 					  			handleNotification(notification);
 				  			}),
 				  30000);
+                  
 	  } // end of successful
 
   }); // end of joinTheGame

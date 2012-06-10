@@ -45,9 +45,10 @@ function City(cell, name) {
     this.draw = draw_city;
 }
 
-function Troop(cell, name) {
-    this.location = cell;
-    cell.troop = this;
+function Troop(curcell, name) {
+    this.location = curcell;
+    this.location.troop = this;
+    curcell.troop = this;
     this.name = "new troop";
     if (name) {
         this.name = name;
@@ -58,11 +59,35 @@ function Troop(cell, name) {
     function draw_troop(context) {
       var icon = new Image();
       icon.src = "img/troop.png";
-      context.drawImage(icon, cell.x, cell.y);
-
+      context.drawImage(icon, this.location.x, this.location.y);
+        alert("Drawing new troop image on x:" + this.location.x +"y:"+  this.location.y);
         context.font = "bold 16px sans-serif";
-        context.fillText(name, cell.x, cell.y);
+        context.fillText(name, this.location.x, this.location.y);
 
     }
-    this.draw = draw_troop;
+    function draw_troop_to_cell(context, dest) {
+      var icon = new Image();
+      icon.src = "img/troop.png";
+      context.drawImage(icon, dest.x, dest.y);
+        alert("Drawing new troop image on x:" + dest.x +"y:"+  dest.y);
+        context.font = "bold 16px sans-serif";
+        context.fillText(name, dest.x, dest.y);
+
+    }
+
+this.draw = draw_troop;
+    
+    function move_troop(context, newCell) {
+        context.clearRect(this.location.x,this.location.y,25,25);
+        
+        this.location.troop = false;
+        newCell.troop = this;
+        this.location = newCell;
+        alert ("setting new location x:" + this.location.x +"y:"+  this.location.y);
+        this.location.troop = this;
+        draw_troop_to_cell(context, this.location);
+    }
+    
+    this.moveTo = move_troop;
+    
 }
