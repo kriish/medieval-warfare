@@ -158,18 +158,22 @@ function handleJoinGame(playerInfo) {
 }
 
 
-function handleSubmitRound(roundInfo) {
+function handleSubmitRound(submitRoundInfo) {
 	// OK, we need some game master logic here
-	console.log( "handleSubmitRound: " + JSON.stringify(roundInfo));
+	console.log( "handleSubmitRound: " + JSON.stringify(submitRoundInfo));
 
 	// which player is this?
-	var currPlayer = players[roundInfo.playerName];
+	var currPlayer = players[submitRoundInfo.player];
 	
-	console.log("currPlayer is" + JSON.stringify(currPlayer));
+	 writeLog("player submitted round:" + currPlayer);
 	
 	//TODO: switch to next player() and also notify all other players what's going on with the game
+<<<<<<< HEAD
+	return submitRoundInfo;
+=======
 	
 	writeLog("Sending turnCompleted :" + JSON.stringify(roundInfo));
+>>>>>>> 6831eeb31ece80abe9e37622fec3870e319857dc
 	
 	for (var i = 0; i < players.length; i++) {
 		var pendingResponse = players[i].pendingResponse;

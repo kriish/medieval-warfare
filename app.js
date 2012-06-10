@@ -64,10 +64,10 @@ app.post('/submitRound/', function(request, response) {
 	request.addListener('end', function() {
 		console.log("received data is :" + data);
 
-		var roundInfo = JSON.parse(data);
+		var submitedRoundInfo = JSON.parse(data);
 
 		// let the gamemaster handles the incoming data
-		result = gameMaster.handleSubmitRound(roundInfo);
+		result = gameMaster.handleSubmitRound(submitedRoundInfo);
 
 
 		response.writeHead(200, {

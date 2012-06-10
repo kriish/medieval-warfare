@@ -7,14 +7,17 @@
 <script src="js/cell.js"></script>  
 <script src="js/cellgrid.js"></script>  
 <script src="js/honeycomb.js"></script>  
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
         <!--script src="frontend/jquery.js" type="text/javascript"></script-->
         <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
     	<script src="frontend/talkToServer.js">	</script>	
+    	<script src="frontend/submitRoundInfo.js"></script>
         
 <script type="text/javascript">
 <!--
 
+$("body").append('<div class="modalOverlay">');
 
 // start of context menu
 
@@ -81,6 +84,8 @@ function setBackgroundImage(context) {
     context.drawImage(sun, 0, 0);
 }
 
+
+
 function writeText(context, text, x, y) {
     context.font = "bold 16px sans-serif";
     context.fillText(text, x, y);
@@ -119,7 +124,7 @@ function createCity() {
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
-    var cityJson = { 'type': 'city', 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
+    var cityJson = { 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
     console.log("New city: " + JSON.stringify(cityJson));
     pendingCities[cityName] = cityJson;
 //    alert("PendingCities: " + JSON.stringify(cityJson));
@@ -131,7 +136,7 @@ function createTroop() {
 //    alert("Creating new troop called " + name);
     var troop = new Troop(currentlySelectedCell, name);
     troop.draw(getActionContext(), currentlySelectedCell);
-    pendingTroops[name] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
+    pendingTroops[name] = {'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 
@@ -204,25 +209,136 @@ function getCreatedCities() {
 }
 
 function submitRound() {
-    var submitJson = {};
-    submitJson['player'] = frontEndPlayer.id;
-    submitJson['create'] = [];
-    for (var city in pendingCities) {
-        submitJson['create'].push(pendingCities[city]);
-        
-    }
-    
-    for (var troop in pendingTroops) {
-        submitJson['create'].push(pendingTroops[troop]);
-        
-    }
+ 	  var newCityList = new Array();
+	  for (var city in pendingCities) {
+		  newCityList.push(pendingCities[city]);
+	  }
 
-alert(JSON.stringify(submitJson));
-	sendToServer(submitJson);
+	  var newTroopList = new Array();
+	  for (var troop in pendingTroops) {
+		  newTroopList.push(pendingTroops[troop]);
+	  }
+    
+	  var submitJson = new submitRoundInfo(frontEndPlayer.id, newCityList, newTroopList);
+	    
+	  alert("submitRoundInfo to server" + JSON.stringify(submitJson));
+
+	
+	  submitRoundToServer(submitJson, function(successful, data) {
+		  if (successful) {
+			  
+		  }
+	  }); 
+    
 }
+
+function setBackgroundImage(context) {
+    var sun = new Image();
+    sun.src = "map.jpg";
+    context.drawImage(sun, 0, 0);
+}
+
+function myPop() { 
+    this.square = null;
+    this.overdiv = null;
+
+    this.popOut = function(msgtxt) {
+        this.overdiv = document.createElement("div");
+        this.overdiv.className = "overdiv";
+
+        this.square = document.createElement("div");
+        this.square.className = "square";
+        this.square.Code = this;
+    	
+        var msg = document.createElement("div");
+        msg.className = "msg";
+        msg.innerHTML = msgtxt;
+        this.square.appendChild(msg);
+		
+		
+		//var name =document.createElement("div");
+		//name.innerHTML=nametxt;
+		
+		//this.square.appendChild("Name");
+		
+		var inpTxt = document.createElement("div");
+        this.square.appendChild(inpTxt);
+		inpTxt.innerHTML="<input type='text'/>";
+		inpTxt.align="center";
+
+		var btnt = document.createElement("div");
+        this.square.appendChild(btnt);
+		btnt.innerHTML="<input type='button'/>";
+		btnt.innerHTML = "Start";
+		btnt.align="center";
+		
+		
+        //var closebtn = document.createElement("button");
+		//closebtn.align="center";
+        btnt.onclick = function() {
+            this.parentNode.Code.popIn();
+        }
+		
+		//closebtn.onclick = function() {
+        //    this.parentNode.Code.popIn();
+        //}
+		
+		
+        //closebtn.innerHTML = "Play";
+        //this.square.appendChild(closebtn);
+		//closebtn.align="center";
+		
+        document.body.appendChild(this.overdiv);
+        document.body.appendChild(this.square);
+    }
+	
+    this.popIn = function() {
+        if (this.square != null) {
+            document.body.removeChild(this.square);
+            this.square = null;
+        }
+        if (this.overdiv != null) {
+        document.body.removeChild(this.overdiv);
+        this.overdiv = null;
+        }
+
+    }
+}
+
+
+
+
 
 //-->
 </script>
+
+<script type="text/javascript" src="NAME OF THE PAGE!.js"></script>
+    <style>
+        div.overdiv { filter: alpha(opacity=75);
+                      -moz-opacity: .75;
+                      opacity: .75;
+                      background-color: #c0c0c0;
+                      position: absolute;
+                      top: 0px;
+                      left: 0px;
+                      width: 100%; height: 100%;z-index:200; }
+
+        div.square { position: absolute;
+                     top: 200px;
+                     left: 500px;
+                     background-color: Menu;
+                     border: #f9f9f9;
+                     height: 250px;
+                     width: 370px;
+    				background-image:url('img/map.jpg');
+                     z-index:200;}
+    				 
+        div.square div.msg { color: #3e6bc2;
+                             line-height:100%;    
+                             font-size: 30px;
+							 text-align: center;
+                             padding: 15px; }				 
+    </style>
 
 </head>
 <body><!-- onload="Init();"-->
@@ -262,11 +378,13 @@ alert(JSON.stringify(submitJson));
 
 <!-- map is the background map, action holds cities and troops, top holds selections -->
 <div id="right-click-controller" style="position: relative;">
+
  <canvas id="map" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
  <canvas id="action" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
  <!--canvas id="city" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas-->
  <canvas id="top" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
  </div>
+
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3 id="roundStatus">Waiting opponent...</h3>
@@ -301,6 +419,7 @@ Troop size <input id="troopSize" type="text" value="100"/><br>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
 </div>
+
 
 <script>
 //<!--
@@ -361,11 +480,16 @@ function updateMap() {
 }
 
 window.onload = function() {
+    
+  
   var mapCanvas = document.getElementById("map");
   var mapContext = mapCanvas.getContext("2d");
   
   // login popup + button start game
-  var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
+
+//  var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
+  var pop = new myPop();
+  pop.popOut("");
   
   joinTheGame(playerName, function(successful, data) {
 
@@ -403,6 +527,7 @@ submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
 
   }); // end of joinTheGame
   
+
 }
 //-->
 </script>
