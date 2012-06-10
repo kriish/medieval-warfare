@@ -23,7 +23,7 @@ var CITY = 2;
 var METROPOL = 3;
 var DESTROYED = 4;
 
-function City(cell, name) {
+function City(cell, name, blue) {
     this.location = cell;
     cell.city = this;
     this.name = "new city";
@@ -35,7 +35,9 @@ function City(cell, name) {
     
     function draw_city(context) {
       var icon = new Image();
-      icon.src = "../img/city.png";
+	if (blue) {icon.src = "/img/city-blue.png";} else {icon.src = "/img/city-red.png";}
+ 
+//      icon.src = "/img/city.png";
       context.drawImage(icon, cell.x, cell.y);
 
         context.font = "bold 16px sans-serif";
@@ -45,7 +47,7 @@ function City(cell, name) {
     this.draw = draw_city;
 }
 
-function Troop(curcell, name) {
+function Troop(curcell, name, blue) {
     this.location = curcell;
     this.location.troop = this;
     curcell.troop = this;
@@ -58,7 +60,8 @@ function Troop(curcell, name) {
     
     function draw_troop(context) {
       var icon = new Image();
-      icon.src = "../img/troop.png";
+	if (blue) {icon.src = "/img/troop-blue.png";} else {icon.src = "/img/troop-red.png";}
+      
       context.drawImage(icon, this.location.x, this.location.y);
         alert("Drawing new troop image on x:" + this.location.x +"y:"+  this.location.y);
         context.font = "bold 16px sans-serif";
@@ -67,7 +70,7 @@ function Troop(curcell, name) {
     }
     function draw_troop_to_cell(context, dest) {
       var icon = new Image();
-      icon.src = "../img/troop.png";
+      icon.src = "/img/troop.png";
       context.drawImage(icon, dest.x, dest.y);
         alert("Drawing new troop image on x:" + dest.x +"y:"+  dest.y);
         context.font = "bold 16px sans-serif";

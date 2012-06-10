@@ -81,7 +81,7 @@ function getCell(e) {
 // return the cell from the cache if exists, otherwise return new
 function getCellByPosition(x,y) {
     var cell = new Cell(x,y);
-    console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
+    //console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
     return findCellFromCache(cell);
 }
     

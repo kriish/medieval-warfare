@@ -169,7 +169,26 @@ function handleSubmitRound(roundInfo) {
 	
 	//TODO: switch to next player() and also notify all other players what's going on with the game
 	
+	writeLog("Sending turnCompleted :" + JSON.stringify(roundInfo));
 	
+	for (var i = 0; i < players.length; i++) {
+		var pendingResponse = players[i].pendingResponse;
+		
+		if (pendingResponse) {
+			pendingResponse.writeHead(200, {
+				'content-type' : 'text/json'});
+
+			var event = {};
+			event.status="turnCompleted";
+			event.roundInfo = roundInfo;
+			pendingResponse.write(JSON.stringify(event));
+
+			pendingResponse.end();	
+			
+			writeLog("notified " + players[i].id);
+		}
+	}
+
 }
 
 function handleClientSubscription(playerInfo, response) {
