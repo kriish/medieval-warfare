@@ -39,6 +39,7 @@ function getPlayerNames() {
 	return playerNames;
 }
 
+// get the current round number
 function getRoundNumber() {
 	return currRoundNumber;
 } 
@@ -50,9 +51,28 @@ function notifyNextPlayer() {
 
 
 // update all players with game info
-function notifyAllPlayers(gameInfo) {
+function notifyRoundInfoToAllPlayers(roundInfo) {
+	console.log("notifyRoundInfoToAllPlayers :" + JSON.stringify(roundInfo));
+	
+	for (var i = 0; i < players.length; i++) {
+		var pendingResponse = players[i].pendingResponse;
+		
+		if (pendingResponse) {
+			pendingResponse.writeHead(200, {
+				'content-type' : 'text/json'});
+
+			var event = {};
+			event.status="turnStarted";
+			event.roundInfo = roundInfo;
+			pendingResponse.write(JSON.stringify(event));
+
+			pendingResponse.end();				
+			
+		}
+	}
 	
 }
+
 
 //function getTimeStampStr(){
 //	var currentTime = new Date();
@@ -119,7 +139,7 @@ function handleJoinGame(playerInfo) {
 		result.roundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
 //		result.currentPlayer = players[getCurrPlayer()].id;
 		//TODO notify all players
-//		notifyAllPlayers(roundInfo);
+		notifyRoundInfoToAllPlayers(result.roundInfo);
 	} else {
 		result.gameStarted = false;
 	}
