@@ -6,9 +6,9 @@ function sendToServer(actionID, data, callback) {
 		type : 'POST',
 		data : JSON.stringify(data),
 		contentType : 'text/json',
-		success : function(data) {
-				callback(true, data);
-				console.log("successfully talked to server" + JSON.stringify(data));
+		success : function(serverData) {
+				callback(true, serverData);
+				console.log("successfully talked to server" + JSON.stringify(serverData));
 				
 		},
 		error : function() {
@@ -39,19 +39,26 @@ function subscribeToServer(playerName, callback) {
 
 	submitJson.playerName = playerName;
 
-	sendToServer('subscribeToServer', submitJson, function(success, data) {
-		callback(success, data);
+	sendToServer('subscribeToServer', submitJson, function(success, serverData) {
+		alert("subscribeToServer got notification from server: \n" + JSON.stringify(serverData));
+//		console.log(handle);
+		
+		callback(success, serverData);
+		
+//		console.log();
+		alert("OK. I'm subscribing again");
+
 		subscribeToServer(playerName, callback);
 	});
 	
 };
 
-function handleNotification(notification) {
-		alert("received notification from server " + notification);
-		
-		subscribeToServer(frontEndPlayer.id,  
-				  function(notification) {
-			  			handleNotification(notification);
-		  			});		
-		
-}
+//function handleNotificationFromServer(notification) {
+//		alert("received notification from server " + notification);
+//		
+//		subscribeToServer(frontEndPlayer.id,  
+//				  function(notification) {
+//				handleNotificationFromServer(notification);
+//		  			});		
+//		
+//}

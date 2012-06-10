@@ -449,18 +449,39 @@ function handleNotifications(notification) {
         // print out opponent name
     } else if (notification.status === "turnCompleted"){
         // print out opponent cities and troops
+    	alert("turnCompleted");
+    	
 /*{status: turnCompleted, round=roundNum, player : playerId, data: {"player":"f",
  "cities" :[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}],
     "troops" : [{"name":"Hi","cell":"525-275"}]}*/
-        var cities =
-	[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}];
-        for(var i=0; i<cities.length; i++) {
-           var cityData = cities[i];
-           var newCity = new City(findCellFromCacheById(cityData.cell), cityData.name);
-           newCity.draw(getActionContext());
-        }
+
+//    	{"status":"turnCompleted","lastSubmitRoundInfo":{"player":"shaohong","create":[{
+//    		"cities":[{"name":"Helsinki","cell":"285-360"}]},{"troops":[]}]},"roundInfo":{"r
+//    		oundNumber":1,"players":["shaohong","Kirsi"],"currentPlayer":"Kirsi"}}" 
+    	
+    	if (notification.lastSubmitRoundInfo) {
+    		var lastSubmitRoundInfo = notification.lastSubmitRoundInfo;
+    		console.log("lastSubmitRoundInfo:" + JSON.stringify(lastSubmitRoundInfo));
+    		console.log("lastSubmitRoundInfo.player:" + JSON.stringify(lastSubmitRoundInfo.player));
+    		console.log("lastSubmitRoundInfo.create.cities:" + JSON.stringify(lastSubmitRoundInfo.create[0]));
+
+            var lastCreate= (lastSubmitRoundInfo.create);
+            var cities = lastCreate[0].cities;
+            alert("new cities: " + JSON.stringify(cities));
+//            	[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}];
+            
+            for(var i=0; i<cities.length; i++) {
+               var cityData = cities[i];
+               var coordinates = cityData.cell.split("-");
+               var newCell = getCellByPosition(coordinates[0], coordinates[1]);
+               var newCity = new City(findCellFromCache(newCell), cityData.name, true);
+               newCity.draw(getActionContext());
+            }
+    		
+    	}
+    	
          
-    }
+    } // end of handling "turnCompleted"
     
     
 }
@@ -489,9 +510,9 @@ window.onload = function() {
   
   // login popup + button start game
 
-//  var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
-  var pop = new myPop();
-  pop.popOut("");
+  var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
+//  var pop = new myPop();
+//  pop.popOut("");
   
   joinTheGame(playerName, function(successful, data) {
 
