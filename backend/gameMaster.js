@@ -141,7 +141,7 @@ function handleJoinGame(playerInfo) {
 	if ( players.length == totalNumOfPlayers ) {
 		result.gameStarted = true;
 		
-		writelog("game started!!!");
+		writeLog("game started!!!");
 		
 		result.roundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
 //		result.currentPlayer = players[getCurrPlayer()].id;
