@@ -14,5 +14,3 @@ function submitRoundInfo(playerName, newCityList, newTroopList){
 	newlyCreatedTroops.troops = newTroopList;
 	this.create[1] = newlyCreatedTroops;
 }
-
-export submitRoundInfo;

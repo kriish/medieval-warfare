@@ -141,7 +141,7 @@ function handleJoinGame(playerInfo) {
 	if ( players.length == totalNumOfPlayers ) {
 		result.gameStarted = true;
 		
-		writelog("game started!!!");
+		writeLog("game started!!!");
 		
 		result.roundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
 //		result.currentPlayer = players[getCurrPlayer()].id;
@@ -158,17 +158,17 @@ function handleJoinGame(playerInfo) {
 }
 
 
-function handleSubmitRound(roundInfo) {
+function handleSubmitRound(submitRoundInfo) {
 	// OK, we need some game master logic here
-	console.log( "handleSubmitRound: " + JSON.stringify(roundInfo));
+	console.log( "handleSubmitRound: " + JSON.stringify(submitRoundInfo));
 
 	// which player is this?
-	var currPlayer = players[roundInfo.playerName];
+	var currPlayer = players[submitRoundInfo.player];
 	
-	console.log("currPlayer is" + JSON.stringify(currPlayer));
+	 writeLog("player submitted round:" + currPlayer);
 	
 	//TODO: switch to next player() and also notify all other players what's going on with the game
-	
+	return submitRoundInfo;
 	
 }
 

@@ -28,12 +28,9 @@ function joinTheGame(playerName, callback) {
 }
 
 
-function submitRound(roundInfo, callback) {
-    var submitJson = new Object();
-    
-    submitJson.playerName = playerName;
+function submitRoundToServer(submitRoundInfo, callback) {
 	
-	sendToServer('submitRound', submitJson, callback);	
+	sendToServer('submitRound', submitRoundInfo, callback);	
 	
 }
 

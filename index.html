@@ -7,10 +7,12 @@
 <script src="js/cell.js"></script>  
 <script src="js/cellgrid.js"></script>  
 <script src="js/honeycomb.js"></script>  
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
         <!--script src="frontend/jquery.js" type="text/javascript"></script-->
         <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
     	<script src="frontend/talkToServer.js">	</script>	
+    	<script src="frontend/submitRoundInfo.js"></script>
         
 <script type="text/javascript">
 <!--
@@ -119,7 +121,7 @@ function createCity() {
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
-    var cityJson = { 'type': 'city', 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
+    var cityJson = { 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
     console.log("New city: " + JSON.stringify(cityJson));
     pendingCities[cityName] = cityJson;
 //    alert("PendingCities: " + JSON.stringify(cityJson));
@@ -131,7 +133,7 @@ function createTroop() {
     alert("Creating new troop called " + name);
     var troop = new Troop(currentlySelectedCell, name);
     troop.draw(getActionContext(), currentlySelectedCell);
-    pendingTroops[name] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
+    pendingTroops[name] = {'name' : name, cell: currentlySelectedCell.hashId() };
     $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
 
@@ -204,21 +206,27 @@ function getCreatedCities() {
 }
 
 function submitRound() {
-    var submitJson = {};
-    submitJson['player'] = frontEndPlayer.id;
-    submitJson['create'] = [];
-    for (var city in pendingCities) {
-        submitJson['create'].push(pendingCities[city]);
-        
-    }
-    
-    for (var troop in pendingTroops) {
-        submitJson['create'].push(pendingTroops[troop]);
-        
-    }
+ 	  var newCityList = new Array();
+	  for (var city in pendingCities) {
+		  newCityList.push(pendingCities[city]);
+	  }
 
-alert(JSON.stringify(submitJson));
-	sendToServer(submitJson);
+	  var newTroopList = new Array();
+	  for (var troop in pendingTroops) {
+		  newTroopList.push(pendingTroops[troop]);
+	  }
+    
+	  var submitJson = new submitRoundInfo(frontEndPlayer.id, newCityList, newTroopList);
+	    
+	  alert("submitRoundInfo to server" + JSON.stringify(submitJson));
+
+	
+	  submitRoundToServer(submitJson, function(successful, data) {
+		  if (successful) {
+			  
+		  }
+	  }); 
+    
 }
 
 //-->
