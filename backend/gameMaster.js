@@ -110,12 +110,31 @@ function handleClientSubscription(playerInfo, response) {
 
 	// find the player
 	for (var i = 0; i < players.length; i++) {
-		if (players[i].id == playerInfo) {
-			console.log("player " + newPlayerName + " is joining again?");
-			return new createJoinPlayerResult(false);
+		if (players[i].id == playerInfo.playerName) {
+
+			var thePlayer = players[i];
+			console.log("handleClientSubscription for player " + thePlayer.id);
+			
+
+			if (thePlayer.pendingResponse) {
+				thePlayer.pendingResponse.writeHead(200, {
+					'content-type' : 'text/json'});
+
+				// acknowledge existing response
+				//TODO: it is better to generate event from some constructor ...
+				var event = {};
+				event.type="nothingHappend";
+				thePlayer.pendingResponse.write(JSON.stringify(event));
+
+				thePlayer.pendingResponse.end();				
+				
+			}
+			
+			// save the new pending request
+			thePlayer.pendingResponse = response;
 		}
 	}
-	// override it existing resonse
+
 }
 
 exports.handleJoinGame = handleJoinGame;

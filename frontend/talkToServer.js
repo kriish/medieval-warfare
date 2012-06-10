@@ -45,3 +45,13 @@ function subscribeToServer(playerName, callback) {
 	sendToServer('subscribeToServer', submitJson, callback);
 	
 };
+
+function handleNotification(notification) {
+		alert("received notification from server " + notification);
+		
+		subscribeToServer(frontEndPlayer.id,  
+				  function(notification) {
+			  			handleNotification(notification);
+		  			});		
+		
+}
