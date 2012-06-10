@@ -40,13 +40,13 @@ function subscribeToServer(playerName, callback) {
 	submitJson.playerName = playerName;
 
 	sendToServer('subscribeToServer', submitJson, function(success, serverData) {
-		alert("subscribeToServer got notification from server: \n" + JSON.stringify(serverData));
+//		alert("subscribeToServer got notification from server: \n" + JSON.stringify(serverData));
 //		console.log(handle);
 		
 		callback(success, serverData);
 		
 //		console.log();
-		alert("OK. I'm subscribing again");
+		console.log("OK. I'm subscribing to server again");
 
 		subscribeToServer(playerName, callback);
 	});

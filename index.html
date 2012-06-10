@@ -542,13 +542,17 @@ submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
 //		  setInterval(
 //				  subscribeToServer(frontEndPlayer.id,  
 //						  function(success, notification) {
+//							if (success) {
 //					  			handleNotifications(notification);
+//							}
 //				  			}),
 //				  30000);
 
 		  subscribeToServer(frontEndPlayer.id,  
 				  function(success, notification) {
-			  			handleNotifications(notification);
+			  			if (success) {
+			  				handleNotifications(notification);
+			  			}
 		  			});  
 		  
 	  } // end of successful
