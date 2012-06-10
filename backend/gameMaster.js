@@ -1,5 +1,6 @@
 
 var player = require("../js/player");
+var roundInfo = require("../js/roundInfo");
 
 // the initial money a player can get
 var player_initial_money = 1000;
@@ -9,18 +10,38 @@ var player_initial_money = 1000;
 var players = new Array();
 var totalNumOfPlayers = 2;	// the total number of players expected
 var currPlayerIdx = 0;
-
+var totalNumberOfRounds = 10;	// the total number of rounds
+var currRoundNumber = 1;
 
 function getCurrPlayer() {
-	return currPlayerIdx;
+	return players[currPlayerIdx];
 }
 
 function switchToNextPlayer() {
 	currPlayerIdx ++;
 	if (currPlayerIdx == players.length) {
 		currPlayerIdx = 0;
+		
+		// update round information
+		currRoundNumber ++;
+		
 	}
 }
+
+// get the names of all the players
+function getPlayerNames() {
+	var playerNames = new Array();
+	
+	for (var i = 0; i < players.length; i++) {
+		playerNames[i] = players[i].id;
+	}
+
+	return playerNames;
+}
+
+function getRoundNumber() {
+	return currRoundNumber;
+} 
 
 // notify the next player it is his/her turn to play the game
 function notifyNextPlayer() {
@@ -32,6 +53,23 @@ function notifyNextPlayer() {
 function notifyAllPlayers(gameInfo) {
 	
 }
+
+//function getTimeStampStr(){
+//	var currentTime = new Date();
+//
+//	var hours = currentTime.getHours();
+//	var minutes = currentTime.getMinutes();
+//	var seconds = currentTime.getSeconds();
+//	if (minutes < 10) {
+//		minutes = "0" + minutes;
+//	}
+//
+//	if (seconds < 10) {
+//		seconds = "0" + seconds;
+//	}
+//	
+//	return hours+":"+minutes+","+seconds;
+//}
 
 function createJoinPlayerResult( successfulOrNot ) {
 
@@ -78,12 +116,15 @@ function handleJoinGame(playerInfo) {
 	// check if we can start the game now and see whose turn it is
 	if ( players.length == totalNumOfPlayers ) {
 		result.gameStarted = true;
-		result.currentPlayer = players[getCurrPlayer()].id;
+		result.roundInfo = new roundInfo.roundInfo(getRoundNumber(), getPlayerNames(), getCurrPlayer().id);
+//		result.currentPlayer = players[getCurrPlayer()].id;
 		//TODO notify all players
 //		notifyAllPlayers(roundInfo);
 	} else {
 		result.gameStarted = false;
 	}
+	
+	console.log(JSON.stringify(result));
 	
 	return result;
 	
