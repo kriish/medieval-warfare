@@ -323,24 +323,43 @@ function setBackgroundImage2(mapCanvas, mapContext) {
     
 }
 
+//"roundInfo":{"roundNumber":1,"players":["Kirsi","Shaohong"],"currentPlayer":"Kirsi"}}
+function updateRoundInfo(roundInfo) {
+        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Current player turn:"+
+	  roundInfo.currentPlayer+"</h3>");
+}
+
 function handleNotifications(notification) {
 	alert("received notification from server " + notification);
     if (notification.status === "ignore") {
         // dummy message
-    } else if (notification.status === "gameStarted") {
+    } else if (notification.status === "turnStarted"){
+        updateRoundInfo(notification.roundInfo);
         // print out opponent name
+    } else if (notification.status === "turnCompleted"){
+        // print out opponent cities and troops
+/*{status: turnCompleted, round=roundNum, player : playerId, data: {"player":"f",
+ "cities" :[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}],
+    "troops" : [{"name":"Hi","cell":"525-275"}]}*/
+        var cities =
+	[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}];
+        for(var i=0; i<cities.length; i++) {
+           var cityData = cities[i];
+           var newCity = new City(findCellFromCacheById(cityData.cell), cityData.name);
+           newCity.draw(getActionContext());
+        }
+         
     }
 }
-function updatePlayerInfo() {
+function updatePlayerInfo(data) {
     $("#playerName").replaceWith("<h2 id='playerName'>"+ frontEndPlayer.id+"</h2>");
 //    console.log("player name field: " + $("#playerName"));
      //money
     $("#money").replaceWith("<div id='money'>"+ frontEndPlayer.money+"</div>");
-    if (!frontEndPlayer.gameStarted) {
+    if (!data.gameStarted) {
         $("#roundStatus").replaceWith("<h3 id='roundStatus'>Waiting for opponent...</h3>");
     } else {
-        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Current player turn:"+
-	  frontEndPlayer.roundInfo.currentPlayer+"</h3>");
+        updateRoundInfo(data.roundInfo);
     }
 // cities
 // troops
@@ -369,7 +388,7 @@ window.onload = function() {
 /*{"indication":true,"player":{"id":"Kirsi","cities":{},"troops":{},"money":1000,"
 submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
         // show money, cities, game started
-                 updatePlayerInfo();
+                 updatePlayerInfo(data);
 
 		  var topCanvas = document.getElementById("top");
 		  var topContext = topCanvas.getContext("2d");
@@ -383,7 +402,7 @@ submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
 
 		  setInterval(
 				  subscribeToServer(frontEndPlayer.id,  
-						  function(notification) {
+						  function(success, notification) {
 					  			handleNotifications(notification);
 				  			}),
 				  30000);

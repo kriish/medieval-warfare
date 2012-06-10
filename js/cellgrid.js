@@ -1,8 +1,8 @@
 var currentlySelectedCell;
 var currentlyHighlightedCell;
 var mapCells=new Array();
-var cellX = 25; 
-var cellY = 25;
+var cellX = 15; 
+var cellY = 15;
 var troopMoving = false;
 var troopCallback = false;
 
@@ -40,6 +40,15 @@ function findCellFromCache(cell) {
         return cell;
     }
 }
+function findCellFromCacheById(cellid) {
+    var foundCell = mapCells[cellid];
+    if (foundCell) {
+        console.log("Found cell " + foundCell.hashId() + ", " + foundCell.x + ", " + foundCell.y + ", selected = " + foundCell.selected);
+        return foundCell;
+    } else {
+	return;
+    }
+}
 
 function getCursorPosition(e) {
     var x;
@@ -72,7 +81,7 @@ function getCell(e) {
 // return the cell from the cache if exists, otherwise return new
 function getCellByPosition(x,y) {
     var cell = new Cell(x,y);
-    console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
+    //console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
     return findCellFromCache(cell);
 }
     
@@ -172,7 +181,7 @@ function drawGrid(context) {
     context.lineTo(canvasWidth(), y);
   }    
   
-  context.strokeStyle = "#FFCC99";
+    context.strokeStyle = "#999966";//"#FFCC99";
   context.stroke();
   
 //  chooseTile(context, 0, 0);
