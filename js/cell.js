@@ -48,6 +48,7 @@ function City(cell, name, blue) {
 }
 
 function Troop(curcell, name, blue) {
+    console.log("Creating troop in currently selected cell " + curcell.hashId);
     this.location = curcell;
     this.location.troop = this;
     curcell.troop = this;
@@ -60,7 +61,7 @@ function Troop(curcell, name, blue) {
     
     function draw_troop(context) {
       var icon = new Image();
-	if (blue) {icon.src = "/img/troop-blue.png";} else {icon.src = "/img/troop-red.png";}
+      if (blue) {icon.src = "/img/troop-blue.png";} else {icon.src = "/img/troop-red.png";}
       
       context.drawImage(icon, this.location.x, this.location.y);
         alert("Drawing new troop image on x:" + this.location.x +"y:"+  this.location.y);

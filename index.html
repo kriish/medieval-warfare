@@ -115,7 +115,7 @@ var pendingTroops = {};
 
 function createCity() {
     var cityName = document.getElementById("cityName").value;
-    alert("Creating new city called " + cityName);
+//    alert("Creating new city called " + cityName);
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
@@ -128,7 +128,7 @@ function createCity() {
 
 function createTroop() {
     var name = document.getElementById("troopName").value;
-    alert("Creating new troop called " + name);
+//    alert("Creating new troop called " + name);
     var troop = new Troop(currentlySelectedCell, name);
     troop.draw(getActionContext(), currentlySelectedCell);
     pendingTroops[name] = { 'type' : 'troop', 'name' : name, cell: currentlySelectedCell.hashId() };
