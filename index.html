@@ -270,6 +270,8 @@ alert(JSON.stringify(submitJson));
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
 <h3 id="roundStatus">Waiting opponent...</h3>
+<h3>Money</h3>
+<div id="money">0</div>
 <h3>Cities</h3>
 <div id="cityList">
 No Cities
@@ -321,6 +323,23 @@ function handleNotifications(notification) {
         // print out opponent name
     }
 }
+function updatePlayerInfo() {
+    $("#playerName").replaceWith("<h2 id='playerName'>"+ frontEndPlayer.id+"</h2>");
+//    console.log("player name field: " + $("#playerName"));
+     //money
+    $("#money").replaceWith("<div id='money'>"+ frontEndPlayer.money+"</div>");
+    if (!frontEndPlayer.gameStarted) {
+        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Waiting for opponent...</h3>");
+    } else {
+        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Current player turn:"+
+	  frontEndPlayer.roundInfo.currentPlayer+"</h3>");
+    }
+// cities
+// troops
+}
+
+function updateMap() {
+}
 
 window.onload = function() {
   var mapCanvas = document.getElementById("map");
@@ -339,9 +358,11 @@ window.onload = function() {
 		  
 		  frontEndPlayer = data.player; // backend return the newly created player
 //		  alert("gamestarted = " + data.gameStarted);
-        // show money
-		  $("#playerName").replaceWith("<h2 id='playerName'>"+ playerName+"</h2>");
-          console.log("player name field: " + $("#playerName"));
+/*{"indication":true,"player":{"id":"Kirsi","cities":{},"troops":{},"money":1000,"
+submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
+        // show money, cities, game started
+                 updatePlayerInfo();
+
 		  var topCanvas = document.getElementById("top");
 		  var topContext = topCanvas.getContext("2d");
 		  //writeText(topContext, "Mamadou", 248, 43);
