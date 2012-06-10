@@ -1,6 +1,6 @@
 function Cell(row, column) {
-    var cellX = 25;
-    var cellY = 25;
+    var cellX = 15;
+    var cellY = 15;
     this.row = row;
     this.x = row - (row % cellX);
     this.y = column - (column % cellY);;
@@ -35,7 +35,7 @@ function City(cell, name) {
     
     function draw_city(context) {
       var icon = new Image();
-      icon.src = "img/city.png";
+      icon.src = "../img/city.png";
       context.drawImage(icon, cell.x, cell.y);
 
         context.font = "bold 16px sans-serif";
@@ -58,7 +58,7 @@ function Troop(curcell, name) {
     
     function draw_troop(context) {
       var icon = new Image();
-      icon.src = "img/troop.png";
+      icon.src = "../img/troop.png";
       context.drawImage(icon, this.location.x, this.location.y);
         alert("Drawing new troop image on x:" + this.location.x +"y:"+  this.location.y);
         context.font = "bold 16px sans-serif";
@@ -67,7 +67,7 @@ function Troop(curcell, name) {
     }
     function draw_troop_to_cell(context, dest) {
       var icon = new Image();
-      icon.src = "img/troop.png";
+      icon.src = "../img/troop.png";
       context.drawImage(icon, dest.x, dest.y);
         alert("Drawing new troop image on x:" + dest.x +"y:"+  dest.y);
         context.font = "bold 16px sans-serif";
