@@ -7,3 +7,5 @@ function Troop(name, type, size) {
     this.type = type;
     this.size = size;
 }
+
+exports.Troop = Troop;

@@ -1,4 +1,3 @@
-<doctype html />
 <html>
 <!--hellox-->
 <head>
@@ -8,47 +7,17 @@
 <script src="js/cell.js"></script>  
 <script src="js/cellgrid.js"></script>  
 <script src="js/honeycomb.js"></script>  
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>  
-        <script src="frontend/jquery.js" type="text/javascript"></script>
+        <!--script src="frontend/jquery.js" type="text/javascript"></script-->
         <script src="frontend/jquery.rightClick.js" type="text/javascript"></script>
+    	<script src="frontend/talkToServer.js">	</script>	
+    	<script src="frontend/submitRoundInfo.js"></script>
+        
 <script type="text/javascript">
 <!--
 
 $("body").append('<div class="modalOverlay">');
-// city name
-function hideCityName() {
-    $('#new-city-name').hide(); // city-name
-}
-function showCityName() {
-    $('#new-city-name').show(); // city-name
-    $('#new-city-name').offset({ top: mouseY, left: mouseX });
-//	$('#new-city-name').width($(contextName).width());
-//	$('#new-city-name').height($(contextName).height());
-
-}
-function initCityName() {}
-function keyPressedCallback(event) {
-           event = event || window.event;
-
-           if (event.metaKey)
-             return;
-
-           var keyChar =String.fromCharCode(o3djs.event.getEventKeyChar(event));
-           keyChar = keyChar.toLowerCase();
-    $('#city-name').append(keyChar);
-    
-         }
-function getCityName(nameFinished) {
-  var name = false;
-  window.document.onkeypress = keyPressedCallback;
-  showCityName();
-  
-  return name;
-}
-function cityNameFinished() {
-
-}
-// eof city name
 
 // start of context menu
 
@@ -67,7 +36,6 @@ function cityNameFinished() {
 			function ShowContextMenu(mouseX, mouseY)
 			{
                 if (currentlySelectedCell && currentlySelectedCell.city) {
-                        alert('we have city in the cell');
                         contextName = '#context-city';
                     
                 } else {
@@ -90,11 +58,11 @@ function cityNameFinished() {
             // end of context menu
 
 function canvasWidth() {
-  return 600;
+  return 640;
   }
     
 function canvasHeight() {
-    return 600;
+    return 560;
 }
 var eventDisplay = "test";
     function drawRegionDisplay(context){
@@ -109,55 +77,6 @@ var eventDisplay = "test";
         context.fillText(text, 10, 25);
     }
 
-function regionListeners(canvas, context) {
-    var myStage = new Kinetic.Stage(canvas);
-           // draw darth vader image and attach listeners
-            myStage.beginRegion();
-//            context.drawImage(darthVaderImg, 100, 50, 200, 137);
-            // draw rectangular region for image
-            context.beginPath();
-            context.rect(50, 50, 200, 200);
-            context.closePath();
- 
-            myStage.addRegionEventListener("onmouseover", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseover!";
-            });
-            myStage.addRegionEventListener("onmouseout", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseout!";
-            });
-            myStage.addRegionEventListener("onmousedown", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mousedown!";
-            });
-            myStage.addRegionEventListener("onmouseup", function(){
-                console.log("mouseup");
-                eventDisplay = "Darth Vader mouseup!";
-            });
-            myStage.closeRegion();
-            drawRegionDisplay(context);
-}    
-    
-/*
-function drawGrid(context) {
-    var cellSize = 50;
-  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
-    context.moveTo(x, 0);
-    context.lineTo(x, canvasHeight());
-  }
- 
-  for (var y = 0.5; y < canvasHeight(); y += cellSize) {
-    context.moveTo(0, y);
-    context.lineTo(canvasWidth(), y);
-  }    
-  
-  context.strokeStyle = "#ee0";
-  context.stroke();
-  
-//  chooseTile(context, 0, 0);
-}
-*/
 
 function setBackgroundImage(context) {
     var sun = new Image();
@@ -180,13 +99,6 @@ function handleMouseover(e) {
 var mouseX = e.clientX - canvas.offsetLeft;
     var mouseY = e.clientY - canvas.offsetTop;
  
-   if(mouseX < 100 && mouseY < 100) {
-       console.log("in region");
-       drawEventDisplay(context,"in corner");
-   } else {
-       console.log("out of region");
-       drawEventDisplay(context,"outta here");
-    }
     
     highlightTile(mouseX, mouseY);
     
@@ -197,46 +109,127 @@ function getActionContext() {
   var topContext = topCanvas.getContext("2d");
   return topContext;
 }
-// TODO third middle canvas for cities and troops? now top
+
+function getMapContext() {
+  var topCanvas = document.getElementById("map");
+  var topContext = topCanvas.getContext("2d");
+  return topContext;
+}
+var pendingCities = new Array();
+var pendingTroops = {};
+
 function createCity() {
-    
-    //getCityName
     var cityName = document.getElementById("cityName").value;
     alert("Creating new city called " + cityName);
     var newCity = new City(currentlySelectedCell, cityName);
     newCity.draw(getActionContext());
     //writeText(getActionContext(), cityName, 200, 200);
-}
-function createCityBackend() {
-    //call backend
-    /*
-    { }
-    */
+    var cityJson = { 'name' : cityName, 'cell': currentlySelectedCell.hashId() };
+    console.log("New city: " + JSON.stringify(cityJson));
+    pendingCities[cityName] = cityJson;
+//    alert("PendingCities: " + JSON.stringify(cityJson));
+    $("#pendingCities").append(cityName + " <button>Delete</button><br>");
 }
 
-function createMonument() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
-}
 function createTroop() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
+    var name = document.getElementById("troopName").value;
+    alert("Creating new troop called " + name);
+    var troop = new Troop(currentlySelectedCell, name);
+    troop.draw(getActionContext(), currentlySelectedCell);
+    pendingTroops[name] = {'name' : name, cell: currentlySelectedCell.hashId() };
+    $("#pendingTroops").append(name + " <button>Delete</button><br>");
 }
-function createMine() {
-    var newCity = new City(currentlySelectedCell);
-    newCity.draw(getActionContext());
-}
+
 function cityInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO";
 }
+
 function troopInfo() {
   var info = document.getElementById("info");
   info.innerHTML = "TODO troop info";
 }
+knight = new Image(25,30);
+knight.src = 'troop.png'
+
+var knightObj = {x: 30, y:60};
+
+function drawTroop(){
+    var ctx = document.getElementById('action').getContext("2d");
+	ctx.save();
+	ctx.drawImage(knight, knightObj.x, knightObj.y);
+	//setTimeout(drawKnight,300);
+	ctx.restore();
+
+}
+
+function moveTroopTo(dir){
+	var ctx = document.getElementById('playerLayer').getContext("2d");
+	ctx.clearRect(knightObj.x,knightObj.y,25,30);
+	if(dir == 'up'){
+		if(knightObj.y >30){
+			knightObj.y-=10;
+		}
+	}
+	if(dir == 'down'){
+		if(knightObj.y < 120){
+			knightObj.y+=10;
+			}
+	}
+	drawKnight();
+}
+
+function troopStill() {
+    troopCallback = false;
+}
+function moveTroop() {
+//    var name = document.getElementById("troopName").value;
+//    alert("Creating new troop called " + name);
+    var troop = currentlySelectedCell.troop;
+    if (troop) {
+        troopMoving = true;
+        troopCallback = function(destCell) {
+            // animate troop moving
+            alert("moving");
+            troop.moveTo(getActionContext(), destCell);
+//            moveTroopTo("up");
+            troopMoving = false;
+            troopStill();
+        }
+        //troop.draw(getActionContext());
+    } else {
+        alert("No troops to move in the selected area");
+    }
+}
+
+function getCreatedCities() {
+    var json = {};
+    json.type = 'city';
+    json;
+}
 
 function submitRound() {
-    alert('TODO');
+ 	  var newCityList = new Array();
+	  for (var city in pendingCities) {
+		  newCityList.push(pendingCities[city]);
+	  }
+
+	  var newTroopList = new Array();
+	  for (var troop in pendingTroops) {
+		  newTroopList.push(pendingTroops[troop]);
+	  }
+    
+	  var submitJson = new submitRoundInfo(frontEndPlayer.id, newCityList, newTroopList);
+	    
+	  alert("submitRoundInfo to server" + JSON.stringify(submitJson));
+
+	
+	  submitRoundToServer(submitJson, function(successful, data) {
+		  if (successful) {
+			  
+		  }
+	  }); 
+    
 }
 
 function setBackgroundImage(context) {
@@ -355,7 +348,9 @@ function myPop() {
 <button onclick="createMonument();return false;">Create monument</button>
 <button onclick="createMine();return false;">Create mine</button>
 <button onclick="createTroop();return false;">New troop</button-->
-
+<img style="display: none" src="img/map1.jpg"/>
+<img style="display: none" src="img/troop.jpg"/>
+<img style="display: none" src="img/city.jpg"/>
 <div id="context-menu-bkg" style="display: none;"></div>
 		<div id="context" class="context-menu">
 			<div class="menu-item allow-hover" onclick="createCity(); HideContextMenu();">Create city</div>
@@ -383,33 +378,43 @@ function myPop() {
 
 <!-- map is the background map, action holds cities and troops, top holds selections -->
 <div id="right-click-controller" style="position: relative;">
- <canvas id="map" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="action" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
- <canvas id="top" width="600" height="600" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
-</div>
+
+ <canvas id="map" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+ <canvas id="action" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <!--canvas id="city" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas-->
+ <canvas id="top" width="640" height="560" style="position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
+ </div>
 
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="playerName">Player 1</h2>
+<h3 id="roundStatus">Waiting opponent...</h3>
+<h3>Money</h3>
+<div id="money">0</div>
 <h3>Cities</h3>
-City 1 (TODO)
-City 2 (TODO)
-
+<div id="cityList">
+No Cities
+</div>
 <h3>Troops</h3>
-Troop 1 (TODO)
+<div id="cityList">
+No Troops
+</div>
 </div>
 <!--http://www.javascriptkit.com/javatutors/crossmenu.shtml-->
 <div id="info"><!-- style="position: relative;left:600px;"-->
 <h2 id="roundName">Round 1</h2>
-<h3>Create city</h3>
-New City 1 <button>Cancel</button><br>
+<h3 id="createCity">Create city</h3>
+<div id="pendingCities"></div>
 City name <input id="cityName" type="text"/> <button onclick="createCity();false;">Create</button>
 
 <h3>Create troops</h3>
-Troop 1 <button>Remove</button><br>
-Troop name <input name="troopName" type="text"/><br>
-Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>
-Troop size <input name="troopSize" type="text"/><br>
-<button>Create</button><button>Cancel</button>
+<div id="pendingTroops"></div>
+Troop name <input id="troopName" type="text"/><br>
+<!--Troop type <select><option>Infantry</option><option>Horsemen</option></select><br>-->
+Troop size <input id="troopSize" type="text" value="100"/><br>
+<button onclick="createTroop();false;">Create</button>
+<p>
+<button onclick="moveTroop();false;">Move</button>
+</p>
 <p>
 <button onclick="submitRound();return false;">Submit round</button>
 </p>
@@ -418,6 +423,62 @@ Troop size <input name="troopSize" type="text"/><br>
 
 <script>
 //<!--
+function setBackgroundImage2(mapCanvas, mapContext) {
+    var canvasExists = !!(mapCanvas.getContext && mapCanvas.getContext('2d')),
+    oImage = $('img')[0];
+    if (canvasExists) {
+        mapCanvas.height = oImage.height;
+        mapCanvas.width = oImage.width;
+        mapContext.drawImage(oImage, 0, 0);
+      }
+    
+}
+
+//"roundInfo":{"roundNumber":1,"players":["Kirsi","Shaohong"],"currentPlayer":"Kirsi"}}
+function updateRoundInfo(roundInfo) {
+        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Current player turn:"+
+	  roundInfo.currentPlayer+"</h3>");
+}
+
+function handleNotifications(notification) {
+	alert("received notification from server " + notification);
+    if (notification.status === "ignore") {
+        // dummy message
+    } else if (notification.status === "turnStarted"){
+        updateRoundInfo(notification.roundInfo);
+        // print out opponent name
+    } else if (notification.status === "turnCompleted"){
+        // print out opponent cities and troops
+/*{status: turnCompleted, round=roundNum, player : playerId, data: {"player":"f",
+ "cities" :[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}],
+    "troops" : [{"name":"Hi","cell":"525-275"}]}*/
+        var cities =
+	[{"name":"Helsinki","cell":"525-275"},{"name":"Helsinki2","cell":"550-375"}];
+        for(var i=0; i<cities.length; i++) {
+           var cityData = cities[i];
+           var newCity = new City(findCellFromCacheById(cityData.cell), cityData.name);
+           newCity.draw(getActionContext());
+        }
+         
+    }
+}
+function updatePlayerInfo(data) {
+    $("#playerName").replaceWith("<h2 id='playerName'>"+ frontEndPlayer.id+"</h2>");
+//    console.log("player name field: " + $("#playerName"));
+     //money
+    $("#money").replaceWith("<div id='money'>"+ frontEndPlayer.money+"</div>");
+    if (!data.gameStarted) {
+        $("#roundStatus").replaceWith("<h3 id='roundStatus'>Waiting for opponent...</h3>");
+    } else {
+        updateRoundInfo(data.roundInfo);
+    }
+// cities
+// troops
+}
+
+function updateMap() {
+}
+
 window.onload = function() {
     
   
@@ -425,26 +486,48 @@ window.onload = function() {
   var mapContext = mapCanvas.getContext("2d");
   
   // login popup + button start game
-  //var begin_namepopup=prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
+
+//  var playerName =prompt("Welcome to Medieval Warfare. Enter your name to get yourself known.");
   var pop = new myPop();
   pop.popOut("");
-    
-  setBackgroundImage(mapContext);
+  
+  joinTheGame(playerName, function(successful, data) {
 
-  var topCanvas = document.getElementById("top");
-  var topContext = topCanvas.getContext("2d");
-  writeText(topContext, "Mamadou", 248, 43);
-  topCanvas.addEventListener("click", selectSquare, false);
-//  topCanvas.addEventListener("mouseup", selectSquare, false);
-//  drawGrid(context);
-//  honeycomb(topContext);
-//  selectHoneycomb(topContext);
-//regionListeners(topCanvas, topContext);
-  topCanvas.addEventListener("mousemove", handleMouseover, false);
+	  if (successful) {
+	  
+		  console.log("continue joining with the following initiliazation data" + data);
+		  
+		  alert('server returned ' + JSON.stringify(data));
+		  
+		  frontEndPlayer = data.player; // backend return the newly created player
+//		  alert("gamestarted = " + data.gameStarted);
+/*{"indication":true,"player":{"id":"Kirsi","cities":{},"troops":{},"money":1000,"
+submittedRound":0},"gameStarted":true,"currentPlayer":"shaohong"}*/
+        // show money, cities, game started
+                 updatePlayerInfo(data);
+
+		  var topCanvas = document.getElementById("top");
+		  var topContext = topCanvas.getContext("2d");
+		  //writeText(topContext, "Mamadou", 248, 43);
+		  topCanvas.addEventListener("click", selectSquare, false);
+		//  topCanvas.addEventListener("mouseup", selectSquare, false);
+		    setBackgroundImage2(mapCanvas, mapContext);
+		  drawGrid(mapContext);
+		  topCanvas.addEventListener("mousemove", handleMouseover, false);
+		  Init();
+
+		  setInterval(
+				  subscribeToServer(frontEndPlayer.id,  
+						  function(success, notification) {
+					  			handleNotifications(notification);
+				  			}),
+				  30000);
+                  
+	  } // end of successful
+
+  }); // end of joinTheGame
   
-   
-  
-  Init();
+
 }
 //-->
 </script>

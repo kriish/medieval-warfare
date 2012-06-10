@@ -1,23 +1,32 @@
 var currentlySelectedCell;
 var currentlyHighlightedCell;
 var mapCells=new Array();
-
+var cellX = 15; 
+var cellY = 15;
+var troopMoving = false;
+var troopCallback = false;
 
 // x and y are the coordinates clicked based on which we choose the tile
 function chooseTile(context, x,y) {
-    x = x - (x % 50);
-    y = y - (y % 50);
-    context.fillStyle = "rgba(0, 0, 200, 0.5)";
-   context.fillRect(0.5 + x, 0.5 + y,50.5,50.5);
+    var fillColor = "rgba(0, 0, 200, 0.5)";
+    var troopColor = "rgba(0, 200, 0, 0.5)";
+    x = x - (x % cellX);
+    y = y - (y % cellY);
+    context.fillStyle = fillColor;
+    if (troopMoving) {
+        context.fillStyle = troopColor;
+    }
+   context.fillRect(0.5 + x, 0.5 + y,cellX + 0.5, cellY + 0.5);
+   
 //   context.strokeStyle = "#ff0";
 //   context.stroke();
 }
  
 // x and y are the coordinates clicked based on which we choose the tile
 function unchooseTile(context, x,y) {
-    x = x - (x % 50);
-    y = y - (y % 50);
-   context.clearRect (0.5 + x, 0.5 + y,50.5,50.5);
+    x = x - (x % cellX);
+    y = y - (y % cellY);
+   context.clearRect (0.5 + x, 0.5 + y, cellX + 0.5, cellY + 0.5);
 }
 
 function findCellFromCache(cell) {
@@ -29,6 +38,15 @@ function findCellFromCache(cell) {
         
         mapCells[cell.hashId()] = cell;
         return cell;
+    }
+}
+function findCellFromCacheById(cellid) {
+    var foundCell = mapCells[cellid];
+    if (foundCell) {
+        console.log("Found cell " + foundCell.hashId() + ", " + foundCell.x + ", " + foundCell.y + ", selected = " + foundCell.selected);
+        return foundCell;
+    } else {
+	return;
     }
 }
 
@@ -63,7 +81,7 @@ function getCell(e) {
 // return the cell from the cache if exists, otherwise return new
 function getCellByPosition(x,y) {
     var cell = new Cell(x,y);
-    console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
+    //console.log("Cursor position cell: " + cell.hashId() + ", " + cell.test + " " + cell.x + ", " + cell.y + ", selected = " + cell.selected);
     return findCellFromCache(cell);
 }
     
@@ -89,28 +107,56 @@ function select(cell) {
     unchooseTile(context, cell.row, cell.column);
   } else {
       if (currentlySelectedCell) {
+          
         unchooseTile(context, currentlySelectedCell.row, currentlySelectedCell.column);
+        currentlySelectedCell.selected = false;
         currentlySelectedCell = false;
       }
     cell.selected = true;
     currentlySelectedCell = cell;
     chooseTile(context, cell.row, cell.column);
+    if (troopCallback) {
+        troopCallback(cell);
+    }
   }
+  if (currentlyHighlightedCell) {
+    currentlyHighlightedCell.highlighted = false;
+    currentlyHighlightedCell = false;
+}
 }
 
+var hackCity = false;
 function highlight(cell) {
           var canvas = document.getElementById("top");
   var context = canvas.getContext("2d");
-  
+  /*
+  if (cell.city) {
+    alert("cell has city");
+    hackCity = true;
+  } else {
+    hackCity = false;
+  }
+  */
   if (cell.selected) {
       // do nothing
+      if (hackCity) {
+        alert("Not highlightinc city, is selected");
+        }
   } else if (cell.highlighted) {
      // do nothing, already highlighted
+           if (hackCity) {
+        alert("Not highlightinc city, is highlighted");
+        }
+
   } else { // not highlighted, could be selected
       // unhighlight previous highlight, unless it is also selected
       if (currentlyHighlightedCell && (currentlyHighlightedCell != currentlySelectedCell)) {
         unchooseTile(context, currentlyHighlightedCell.row, currentlyHighlightedCell.column);
       }
+            if (hackCity) {
+        alert("highlighting");
+        }
+
       // highlight pointed one
       cell.highlighted = true;
       currentlyHighlightedCell = cell;
@@ -121,5 +167,23 @@ function highlight(cell) {
 function highlightTile(x,y) {
    var cell = getCellByPosition(x,y);
    highlight(cell);
+}
+
+function drawGrid(context) {
+    var cellSize = cellX;
+  for (var x = 0.5; x < canvasWidth(); x += cellSize) {
+    context.moveTo(x, 0);
+    context.lineTo(x, canvasHeight());
+  }
+ 
+  for (var y = 0.5; y < (canvasHeight()); y += cellSize) {
+    context.moveTo(0, y);
+    context.lineTo(canvasWidth(), y);
+  }    
+  
+    context.strokeStyle = "#999966";//"#FFCC99";
+  context.stroke();
+  
+//  chooseTile(context, 0, 0);
 }
 
