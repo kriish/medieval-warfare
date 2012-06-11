@@ -43,9 +43,15 @@ function subscribeToServer(playerName, callback) {
 //		alert("subscribeToServer got notification from server: \n" + JSON.stringify(serverData));
 //		console.log(handle);
 		
-		callback(success, serverData);
-		
-//		console.log();
+		try {
+			callback(success, serverData);
+		} catch (err) {
+			  txt="There was an error on this page.\n\n";
+			  txt+="Error description: " + err.message + "\n\n";
+			  txt+="Click OK to continue.\n\n";
+			  alert(txt);			
+		}
+
 		console.log("OK. I'm subscribing to server again");
 
 		subscribeToServer(playerName, callback);
