@@ -4,10 +4,10 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
+var routes = require('routes');
 var gameMaster = require('./public/backend/gameMaster');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // Configuration
 
@@ -18,6 +18,13 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/js'));
+  app.use(express.static(__dirname + '/css'));
+  app.use(express.static(__dirname + '/img'));
+  app.use(express.static(__dirname + '/frontend'));
+  app.use(express.static(__dirname + '/backend'));
+  app.use(express.static(__dirname + '/node_modules'));
+console.log("Configured express");
 });
 
 app.configure('development', function(){
@@ -113,6 +120,12 @@ app.post('/endGame/',  function(request, response){
 	
 });
 
-app.listen(8077, function(){
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+app.use(express.directory('public'))
+
+app.get('/index.html', function(req, res){
+  res.sendfile(__dirname + '/index.html');
+});
+
+app.listen(8080, function(){
+  console.log("Express server listening on port %d in %s mode", 8077, app.settings.env);
 });
